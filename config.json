@@ -1,0 +1,10 @@
+{
+  "configs": [
+    {
+      "action": "add",
+      "key": "Lua.runtime.special",
+      "value": {"import": "require"}
+    }
+  ],
+  "files": ["Info.lua"]
+}
