@@ -4,7 +4,7 @@
 local LrApplication = {}
 
 --- Retrieves the catalog that is currently open in Lightroom.
----@return LrCatalog # The catalog object. See also LrCatalog
+---@return LrCatalog # The catalog object.
 function LrApplication.activeCatalog() end
 
 --- Adds a preset hidden within a plug-in.

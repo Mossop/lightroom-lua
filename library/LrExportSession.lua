@@ -31,6 +31,7 @@ function LrExportSession:removePhoto(photo) end
 
 --- Creates an iterator with which to walk the list of renditions generated for this session's photos.
 ---@param params table? Arguments in named argument syntax; all arguments are optional. exportContext (LrExportContext): An export context. progressScope (LrProgressScope): A progress scope. renderProgressPortion (number): Percentage completion for progress scope when done, [0..1]. stopIfCanceled (Boolean): True to stop the iterator prematurely if progress scope is canceled. The flag is ignored if progressScope is not supplied.
+---@return fun(): number, LrExportRendition | nil
 function LrExportSession:renditions(params) end
 
 --- Creates an iterator with which to walk an export filter's renditions-to-satisfy list.

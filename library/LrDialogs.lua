@@ -33,7 +33,7 @@ function LrDialogs.presentFloatingDialog(plugin, args) end
 
 --- Invokes a custom dialog box as a modal dialog.
 ---@param args table a table with these fields title: (string) The title of the dialog. resizable: (Boolean or string) The string "vertically" or "horizontally" to make the dialog resizable in one direction, true to make it resizable in both directions, or false to prevent resizing. contents: (LrView) The topmost container of an LrView hierarchy, to use for the contents of the dialog. accessoryView: (LrView, optional) The topmost container of an LrView hierarchy, that defines an alternative selection mechanism in place of the third button. Mutually exclusive with otherVerb. actionVerb: (string, optional) The localizable label of the action button; default "OK". actionBinding: (table, optional) Binding(s) applicable to the action button of the dialog. For example: actionBinding = { enabled = { bind_to_object = props, key = 'actionEnabled' }, } See viewFactory:push_button for further detail on bindable attributes. cancelVerb: (string, optional) The localizable label of the cancel button; default "Cancel". If the string "< exclude >" (spelled exactly like that, including the spaces) is supplied, the cancel button will not appear. The unique return value is "cancel". otherVerb: (string, optional) If supplied,the localizable label of a third button. The unique return value for this button is "other". If not supplied, no third button is shown. Mutually exclusive with accessoryView. save_frame: (string, optional) If supplied, a unique key to be used to automatically save the position of the dialog as one of the plug-in settings. This is added to your plug-in's list of settings.
----@return string # The unique return value of the button used to dismiss the dialog. See also LrView
+---@return string # The unique return value of the button used to dismiss the dialog.
 function LrDialogs.presentModalDialog(args) end
 
 --- Invokes a dialog that prompts for an action, and includes a "Do not show" checkbox.
@@ -47,12 +47,12 @@ function LrDialogs.resetDoNotShowFlag(actionPrefKey) end
 
 --- Invokes the platform Open File dialog.
 ---@param args table A table with these fields: title: (string) The title of the dialog. prompt: (string) The label of the default button. Replaces "Open". canChooseFiles: (Boolean) True to allow files to be selected. canChooseDirectories: (Boolean) True to allow directories to be selected. canCreateDirectories: (Boolean) True to include a button to create directories. allowsMultipleSelection: (Boolean) True to allow multiple files to be selected. fileTypes: (string or table) The file types that can be selected. accessoryView: (LrView) A custom view to be included in the dialog. initialDirectory: (string, optional) Path to directory that should be initially opened.
----@return table # An array of path names or nil if the dialog was cancelled. See also LrView
+---@return table # An array of path names or nil if the dialog was cancelled.
 function LrDialogs.runOpenPanel(args) end
 
 --- Invokes the platform Save File dialog.
 ---@param args table A table with these fields: title: (string) The title of the dialog. prompt: (string) The label of the default button. Replaces "Save". requiredFileType: (string) The file extension of the file to be saved. canCreateDirectories: (Boolean) True to include a button to create directories. accessoryView: (LrView) A custom view to be included in the dialog.
----@return string # The path of the file that was saved or nil if the dialog was cancelled. See also LrView
+---@return string # The path of the file that was saved or nil if the dialog was cancelled.
 function LrDialogs.runSavePanel(args) end
 
 --- Shows a message in a window that quickly fades away.

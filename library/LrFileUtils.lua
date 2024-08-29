@@ -38,7 +38,7 @@ function LrFileUtils.exists(path) end
 
 --- Retrieves the file attributes for the file or directory at a given path.
 ---@param path string The path.
----@return table # A set of file attributes, or, if the file does not exist, an empty table. The file attributes include: fileSize: File size in bytes fileCreationDate: The creation date. fileModificationDate: The modification date. Dates are expressed as a number of seconds since midnight GMT, January 1, 2001. See also LrDate
+---@return table # A set of file attributes, or, if the file does not exist, an empty table. The file attributes include: fileSize: File size in bytes fileCreationDate: The creation date. fileModificationDate: The modification date. Dates are expressed as a number of seconds since midnight GMT, January 1, 2001.
 function LrFileUtils.fileAttributes(path) end
 
 --- Iterates through the files that are immediate children of the folder.

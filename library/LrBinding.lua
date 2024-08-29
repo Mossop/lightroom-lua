@@ -38,7 +38,7 @@ function LrBinding.keyIsNotNil(key, optObject) end
 
 --- Creates a table that automatically sends notifications whenever values in the table are changed.
 ---@param functionContext LrFunctionContext The function-context object that manages the lifetime of this property table. All notifications are canceled automatically when the context exits
----@return LrObservableTable # The observable table. See also LrView, LrFunctionContext
+---@return LrObservableTable # The observable table.
 function LrBinding.makePropertyTable(functionContext) end
 
 --- Creates a binding that negates the source value, if it is Boolean or numeric.

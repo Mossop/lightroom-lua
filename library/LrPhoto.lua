@@ -60,11 +60,11 @@ function LrPhoto:deleteDevelopSnapshot(id) end
 function LrPhoto:deleteSmartPreview() end
 
 --- Retrieves the photo collections that contain this photo.
----@return table of LrCollection # The list of collection objects. See also LrCollection
+---@return LrCollection[] # The list of collection objects.
 function LrPhoto:getContainedCollections() end
 
 --- Retrieves the published photo collections that contain this photo.
----@return table of LrPublishedCollection # The list of collection objects. See also LrPublishedCollection
+---@return LrPublishedCollection[] # The list of collection objects.
 function LrPhoto:getContainedPublishedCollections() end
 
 --- Retrieves the current develop settings for this photo.

@@ -32,4 +32,5 @@ function LrExportRendition:type() end
 function LrExportRendition:uploadFailed(message) end
 
 --- Causes the export task to yield time to other tasks until this rendition has been fully generated.
+---@return boolean, string
 function LrExportRendition:waitForRender() end

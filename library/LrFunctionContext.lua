@@ -22,14 +22,14 @@ local LrFunctionContextNamespace = {}
 ---@param name string A name for this context (used only for debugging)
 ---@param func function The main function to call.
 ---@param ... any
----@return any # The call results; that is, whatever is returned from the main function. See also LrTasks.startAsyncTask
+---@return any # The call results; that is, whatever is returned from the main function.
 function LrFunctionContextNamespace.callWithContext(name, func, ...) end
 
 --- Same as callWithContext, but calls the function in a fashion that disables LrTasks.yield from working.
 ---@param name string A name for this context (used only for debugging)
 ---@param func function The main function to call.
 ---@param ... any
----@return any # The call results; that is, whatever is returned from the main function. See also LrTasks.startAsyncTask
+---@return any # The call results; that is, whatever is returned from the main function.
 function LrFunctionContextNamespace.callWithContext_noyield(name, func, ...) end
 
 --- Runs the main function in a known-safe function environment.
@@ -49,14 +49,14 @@ function LrFunctionContextNamespace.callWithEnvironment(func, env, ...) end
 ---@param name string A name for this context (used only for debugging)
 ---@param func function The main function to call.
 ---@param ... any
----@return any # The pcall results; that is, a success/failure value, followed by any other return values of the called function. See also LrTasks.startAsyncTask
+---@return any # The pcall results; that is, a success/failure value, followed by any other return values of the called function.
 function LrFunctionContextNamespace.pcallWithContext(name, func, ...) end
 
 --- Same as pcallWithContext, but calls the function in a fashion that disables LrTasks.yield from working.
 ---@param name string A name for this context (used only for debugging)
 ---@param func function The main function to call.
 ---@param ... any
----@return any # The pcall results; that is, a success/failure value, followed by any other return values of the called function. See also LrTasks.startAsyncTask, LrTasks.yield
+---@return any # The pcall results; that is, a success/failure value, followed by any other return values of the called function.
 function LrFunctionContextNamespace.pcallWithContext_noyield(name, func, ...) end
 
 --- Runs the main function in a known-safe function environment, catching any exceptions that occur.

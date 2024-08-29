@@ -44,11 +44,11 @@ function LrPublishedCollection:getPhotos() end
 function LrPublishedCollection:getPublishedPhotos() end
 
 --- Retrieves the remote service's unique identifier for this published collection, as previously recorded by the plug-in.
----@return (string | number) # The remote ID.
+---@return string | number | nil # The remote ID.
 function LrPublishedCollection:getRemoteId() end
 
 --- Retrieves the URL for this published collection, as assigned by the remote service and previously recorded by the plug-in.
----@return (string | number) # The remote URL.
+---@return string | nil # The remote URL.
 function LrPublishedCollection:getRemoteUrl() end
 
 --- Retrieves the search description for a smart collection.

@@ -83,7 +83,7 @@ function LrFtpConnection:removeDirectory(directoryName) end
 function LrFtpConnection:removeFile(filename) end
 
 --- Converts the properties of this FTP connection back into a Lua table, the same as the one passed to LrFtp.create() to create the object.
----@return table # A table of entries for all the properties on this connection. See also LrFtp.create
+---@return table # A table of entries for all the properties on this connection.
 function LrFtpConnection:toTable() end
 
 return LrFtp

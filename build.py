@@ -34,6 +34,15 @@ TYPE_OVERRIDES = {
     "LrHttp.post@totalSize": "number?",
     "LrHttp.postMultipart": "string, table",
     "LrHttp.postMultipart@timeout": "number?",
+    "LrPlugin.id": "string",
+    "LrPlugin.path": "string",
+    "LrPlugin.enabled": "boolean",
+    "LrProgressScopeConstructor": "LrProgressScope",
+    "LrExportContext.exportSession": "LrExportSession",
+    "LrExportSession:renditions": "fun(): number, LrExportRendition | nil",
+    "LrPublishedCollection:getRemoteId": "string | number | nil",
+    "LrPublishedCollection:getRemoteUrl": "string | nil",
+    "LrExportRendition:waitForRender": "boolean, string"
 }
 
 def strip_tags(st):
@@ -43,6 +52,7 @@ def fix_comment(comment):
     return comment.strip()
 
 def fix_type(st):
+    print("    parse: %s" % st)
     if "optional" in st:
         return fix_type(st.replace("optional", "").strip(" ,")) + "?"
 
@@ -57,6 +67,9 @@ def fix_type(st):
 
     if ", " in st:
         return "[" + ", ".join([fix_type(s) for s in st.split(", ")]) + "]"
+
+    if st.startswith("table of "):
+        return fix_type(st[9:]) + "[]"
 
     if st in TYPE_MAP:
         return TYPE_MAP[st]
@@ -75,7 +88,7 @@ def parse_type_from_str(st):
     if match:
         return (fix_type(match.group(2)), match.group(1), fix_comment(match.group(3)))
 
-    return ("any", None, None)
+    return (None, None, None)
 
 def find_by_class(tag, class_name):
     return tag.find_all(attrs={ "class": class_name })
@@ -86,19 +99,26 @@ def find_by_tag_and_text_content(tag, name, content):
 
     return tag.find(search)
 
+def pure_text(tag):
+    if isinstance(tag, Tag):
+        return "".join(tag.strings)
+    else:
+        return str(tag)
+
+def tags_text_contents(tags):
+    text = "".join([pure_text(s) for s in tags])
+    return re.sub("\s+", " ", text.strip())
+
 def text_content(tag):
-    return re.sub("\s+", " ", "".join(tag.strings)).strip()
+    return tags_text_contents(tag.children)
 
 def following_text(child):
-    text = ""
-    while child:
-        if isinstance(child, Tag):
-            text += "".join(child.strings)
-        else:
-            text += str(child)
-        child = child.next_sibling
+    def iter():
+        while child is not None:
+            yield child
+            child = child.next_sibling
 
-    return re.sub("\s+", " ", text.strip())
+    return tags_text_contents(iter())
 
 def next_element(tag):
     tag = tag.next_sibling
@@ -126,7 +146,6 @@ class Base:
         self.name = name
         self.properties = dict()
         self.functions = dict()
-        self.item_type = "any"
 
     def is_ctor(self):
         return not self.is_class() and len(self.functions) == 1 and None in self.functions
@@ -182,6 +201,7 @@ class Item:
     base = None
     separator = None
     name = None
+    item_type = None
 
     def __init__(self, namespace, name):
         match = re.search("^([^:\.]+)([:\.].+)?$", name)
@@ -195,6 +215,9 @@ class Item:
             self.name = match.group(2)[1:]
 
         self.base.add_item(self)
+
+        if "5_202408062022-6258095b" in self.path():
+            raise Exception("fioio")
 
     def found_type(self):
         if self.path() in TYPE_OVERRIDES:
@@ -217,9 +240,9 @@ class Property(Item):
     comment = None
 
     def write(self, file):
-        if self.found_type() == "any":
-            print("  %s has no known type" % self.path())
-        file.write("---@field %s %s" % (self.name, self.found_type()))
+        if self.found_type() is None:
+            print("  %s has no known type" % self.final_path())
+        file.write("---@field %s %s" % (self.name, self.found_type() or "any"))
         if self.comment is not None:
             file.write(" %s" % self.comment)
         file.write("\n")
@@ -239,7 +262,9 @@ class Argument(Item):
         (self.item_type, _, self.comment) = parse_type_from_tag(tag)
 
     def write(self, file):
-        file.write("---@param %s %s" % (self.name, self.found_type()))
+        if self.found_type() is None:
+            print("  %s has no known type" % self.final_path())
+        file.write("---@param %s %s" % (self.name, self.found_type() or "any"))
         if self.comment is not None:
             file.write(" %s" % self.comment)
         file.write("\n")
@@ -259,7 +284,6 @@ class Function(Item):
         match = re.search("^(.+)\((.*)\)$", name)
         super().__init__(namespace, match.group(1))
         self.arguments = dict()
-        self.item_type = None
 
         arg_names = match.group(2).strip()
         if len(arg_names) > 0:
@@ -272,7 +296,10 @@ class Function(Item):
         self.arguments[name].parse(tag)
 
     def parse_return(self, tags):
-        (self.item_type, self.return_name, self.return_comment) = parse_type_from_str(following_text(tags[0]))
+        (self.item_type, self.return_name, self.return_comment) = parse_type_from_str(tags_text_contents(tags))
+        if self.item_type is None:
+            print("  %s has no known type" % self.final_path())
+            self.item_type = "any"
 
     def write(self, file):
         if self.comment is not None:
@@ -365,7 +392,7 @@ for child in p.iterdir():
             if return_header is not None:
                 inner = return_header.next_sibling
                 return_tags = []
-                while inner is not None:
+                while inner is not None and inner.name != "h3":
                     return_tags.append(inner)
                     inner = inner.next_sibling
 

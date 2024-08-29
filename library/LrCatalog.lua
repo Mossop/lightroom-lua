@@ -49,7 +49,7 @@ function LrCatalog:batchGetRawMetadata(photos, keys) end
 
 --- Builds a smart preview for a set of photos.
 ---@param photos LrPhoto[] The photos for which to build smart previews.
----@return table of arrays # A table with sub-arrays indicating the result of the smart preview build attempt. The sub-arrays are 'created', 'existed', and 'failed', and they contain LrPhoto objects corresponding to the photos for which the indicated status is appropriate.
+---@return arrays[] # A table with sub-arrays indicating the result of the smart preview build attempt. The sub-arrays are 'created', 'existed', and 'failed', and they contain LrPhoto objects corresponding to the photos for which the indicated status is appropriate.
 function LrCatalog:buildSmartPreviews(photos) end
 
 --- Creates a new collection in this catalog.
@@ -96,7 +96,7 @@ function LrCatalog:findPhotoByPath(path, caseSensitivity) end
 
 --- Searches for a photo in this catalog by its unique identifier.
 ---@param path string The UUID for the photo.
----@return LrPhoto # The corresponding photo object, or nil if no such photo is in the catalog. See also LrPhoto
+---@return LrPhoto # The corresponding photo object, or nil if no such photo is in the catalog.
 function LrCatalog:findPhotoByUuid(path) end
 
 --- Searches for photos by arbitrary criteria.
@@ -116,7 +116,7 @@ function LrCatalog:findPhotosWithProperty(pluginId, fieldName, optFieldVersion) 
 function LrCatalog:getActiveSources() end
 
 --- Retrieves the photo objects for all photos in the catalog.
----@return table # An array of LrPhoto objects. See also LrPhoto
+---@return table # An array of LrPhoto objects.
 function LrCatalog:getAllPhotos() end
 
 --- Retrieves the top-level collection sets in this catalog.
@@ -137,7 +137,7 @@ function LrCatalog:getCurrentViewFilter() end
 
 --- Retrievs the folder object for a given path.
 ---@param path string The path. You cannot use the short filename in Windows.
----@return LrFolder # The folder object. See also LrTasks
+---@return LrFolder # The folder object.
 function LrCatalog:getFolderByPath(path) end
 
 --- Retrieves the folders defined at the root of the hierarchy.
@@ -158,7 +158,7 @@ function LrCatalog:getKeywordsByLocalId(ids) end
 function LrCatalog:getLabelMapToColorName() end
 
 --- Retrieves the photo objects for all selected photos if more than one is selected, or for all visible photos if only one or none is selected.
----@return LrPhoto[] # The photos. See also LrPhoto
+---@return LrPhoto[] # The photos.
 function LrCatalog:getMultipleSelectedOrAllPhotos() end
 
 --- Retrieves the file-system location of this catalog, the absolute path of the .lrcat file.
@@ -182,11 +182,11 @@ function LrCatalog:getPublishServices(pluginId) end
 function LrCatalog:getPublishedCollectionByLocalIdentifier(id) end
 
 --- Retrieves the active photo, if any.
----@return LrPhoto # The photo object, or nil if none is selected. See also LrPhoto
+---@return LrPhoto # The photo object, or nil if none is selected.
 function LrCatalog:getTargetPhoto() end
 
 --- Retrieves the photo objects for the photos that would be affected by any photo-processing command.
----@return LrPhoto[] # The photos. See also LrPhoto
+---@return LrPhoto[] # The photos.
 function LrCatalog:getTargetPhotos() end
 
 --- Sets the sources from which the grid photos are currently drawn.
@@ -202,7 +202,7 @@ function LrCatalog:setPropertyForPlugin(plugin, fieldId, value) end
 
 --- Sets the photo selection programmatically.
 ---@param activePhoto LrPhoto The active photo; if multiple photos are selected, this is the brightest, "most selected" one.
----@param otherSelectedPhotos table of LrPhoto Additional photos to select.
+---@param otherSelectedPhotos LrPhoto[] Additional photos to select.
 function LrCatalog:setSelectedPhotos(activePhoto, otherSelectedPhotos) end
 
 --- Sets the library view filter programmatically.
@@ -229,13 +229,13 @@ function LrCatalog:updateAISettings(photos) end
 --- Provides write access to custom fields defined by your plug-in.
 ---@param func function The function to call with catalog access.
 ---@param timeoutParams table? This argument is first supported in version 4.0 of the Lightroom SDK. A table which, if present, must contain a 'timeout' key which must be a number stating the number of seconds to wait for write access before giving up. An optional second key, 'callback', which must be a function, can be provided. This function will be called if the timeout expires and the write access task is abandoned. An optional third key, 'asynchronous', specifies whether this function should return immediately upon queueing the write access task, or return on completion of the write access task. The default behavior is to return on completion of the write access task, which corresponds to 'asynchronous' not specified (nil) or false. If 'timeoutParams' is not provided, the behavior will be similar to that in versions prior to Lightroom 4.0: If write access cannot be immediately obtained, an error will be thrown.
----@return string # If 'func' does not throw an error, the returned string will be either "executed", "queued", or "aborted". If the 'asynchronous' parameter is true, withPrivateWriteAccessDo returns immediately with either "executed" or "queued", otherwise it returns within 'timeout' seconds with either "executed" or "aborted". When "executed" is returned, 'func' will have been executed and 'callback' will have been ignored. When "queued" is returned, 'func' will execute within 'timeout' seconds or the 'callback' function will execute. When "aborted" is returned, 'func' will have been ignored and 'callback' will have executed. This return value is only present in version 4.0 and later of the Lightroom SDK. See also LrFunctionContext, LrTasks
+---@return string # If 'func' does not throw an error, the returned string will be either "executed", "queued", or "aborted". If the 'asynchronous' parameter is true, withPrivateWriteAccessDo returns immediately with either "executed" or "queued", otherwise it returns within 'timeout' seconds with either "executed" or "aborted". When "executed" is returned, 'func' will have been executed and 'callback' will have been ignored. When "queued" is returned, 'func' will execute within 'timeout' seconds or the 'callback' function will execute. When "aborted" is returned, 'func' will have been ignored and 'callback' will have executed. This return value is only present in version 4.0 and later of the Lightroom SDK.
 function LrCatalog:withPrivateWriteAccessDo(func, timeoutParams) end
 
 --- Provides read/write access to the catalog for an extended period of time.
 ---@param params table Arguments in named-argument syntax: title: (string) Title of the modal progress dialog, the overall task. Cannot be changed once the operation begins. caption: (optional, string) Subtitle for the current task. Can be changed while the operation is in progress. pluginName: (string) The name of your plug-in to be used in the warning message optionalMessage: (optional, string) An extra message to accompany Lightroom's warning about clearing the undo stack func: (function) The function that will perform the changes to the database. This function receives two parameters, a function context and a progress scope.
 ---@param timeoutParams table? This argument is first supported in version 4.0 of the Lightroom SDK. A table which, if present, must contain a 'timeout' key which must be a number stating the number of seconds to wait for write access before giving up. An optional second key, 'callback', which must be a function, can be provided. This function will be called if the timeout expires and the write access task is abandoned. An optional third key, 'asynchronous', specifies whether this function should return immediately upon queueing the write access task, or return on completion of the write access task. The default behavior is to return on completion of the write access task, which corresponds to 'asynchronous' not specified (nil) or false. If 'timeoutParams' is not provided, the behavior will be similar to that in versions prior to Lightroom 4.0: If write access cannot be immediately obtained, an error will be thrown. Note: The warning dialog will appear as soon as the 'catalog:withProlongedWriteAccessDo' is queued and not when the call is about to start execution. This could result in a delay between when the user accepts the warning dialog and when the modal progress dialog appears.
----@return [boolean, string] # The returned Boolean will be true if user clicked "Proceed"; false if user clicked "Cancel". If 'timeoutParams' was not specified, this will be the only return value. The second return value, a string, if present, will be either "executed", "queued", or "aborted". There will only be a second return value if 'timeoutParams' was specified. If the 'asynchronous' parameter is true, withProlongedWriteAccessDo returns immediately with either "executed" or "queued" for the second return value, otherwise it returns within 'timeout' seconds with either "executed" or "aborted" for the second return value. When "executed" is returned for the second return value, 'func' will have been executed and 'callback' will have been ignored. When "queued" is returned for the second return value, 'func' will execute within 'timeout' seconds or the 'callback' function will execute. When "aborted" is returnedfor the second return value, 'func' will have been ignored and 'callback' will have executed. This second return value is only present in version 4.0 and later of the Lightroom SDK. See also LrFunctionContext, LrProgressScope, LrTasks, LrDialogs.showModalProgressDialog
+---@return [boolean, string] # The returned Boolean will be true if user clicked "Proceed"; false if user clicked "Cancel". If 'timeoutParams' was not specified, this will be the only return value. The second return value, a string, if present, will be either "executed", "queued", or "aborted". There will only be a second return value if 'timeoutParams' was specified. If the 'asynchronous' parameter is true, withProlongedWriteAccessDo returns immediately with either "executed" or "queued" for the second return value, otherwise it returns within 'timeout' seconds with either "executed" or "aborted" for the second return value. When "executed" is returned for the second return value, 'func' will have been executed and 'callback' will have been ignored. When "queued" is returned for the second return value, 'func' will execute within 'timeout' seconds or the 'callback' function will execute. When "aborted" is returnedfor the second return value, 'func' will have been ignored and 'callback' will have executed. This second return value is only present in version 4.0 and later of the Lightroom SDK.
 function LrCatalog:withProlongedWriteAccessDo(params, timeoutParams) end
 
 --- Provides read/write access to the catalog database.
