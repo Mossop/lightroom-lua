@@ -3,6 +3,7 @@ import os
 import re
 from pathlib import Path
 import shutil
+from bs4 import BeautifulSoup, Tag, NavigableString
 
 TYPE_MAP = {
     "Boolean": "boolean",
@@ -13,68 +14,261 @@ TYPE_MAP = {
     "_PLUGIN": "LrPlugin",
     "LrPublishCollection": "LrPublishedCollection",
     "LrPublishCollectionSet": "LrPublishedCollectionSet",
+    "builderInstance": "XmlBuilderInstance",
+    "xmlDomInstance": "XmlDomInstance",
+    "ftpConnection": "LrFtpConnection",
+    "color": "LrColor",
+    "functionContext": "LrFunctionContext",
+    "logger": "LrLogger",
+    "progressScope": "LrProgressScope",
+    "recursionGuard": "LrRecursionGuard",
+    "exportSession": "LrExportSession",
+    "LOC": "LrLocalization.LOC",
 }
 
 def strip_tags(st):
     return re.sub("<[^>]+>", "", st)
 
-def fix_comment(path, comment):
-    return strip_tags(comment).strip()
+def fix_comment(comment):
+    return comment.strip()
 
-def fix_type(path, st):
-    st = strip_tags(st)
-
+def fix_type(st):
     if "optional" in st:
-        return fix_type(path, st.replace("optional", "").strip(" ,")) + "?"
+        return fix_type(st.replace("optional", "").strip(" ,")) + "?"
 
     if st.startswith("array of "):
-        inner = fix_type(path, st[9:])
+        inner = fix_type(st[9:])
         if inner.endswith("s"):
             inner = inner[0:-1]
         return inner + "[]"
 
     if " or " in st:
-        return "(" + " | ".join([fix_type(path, s) for s in st.split(" or ")]) + ")"
+        return "(" + " | ".join([fix_type(s) for s in st.split(" or ")]) + ")"
 
     if ", " in st:
-        return "[" + ", ".join([fix_type(path, s) for s in st.split(", ")]) + "]"
+        return "[" + ", ".join([fix_type(s) for s in st.split(", ")]) + "]"
 
     if st in TYPE_MAP:
         return TYPE_MAP[st]
 
     return st
 
-def write_function(file, name, function):
-    if function["comment"] is not None:
-        file.write("--- %s\n" % function["comment"])
-    for arg in function["args"]:
-        file.write("--- @param %s %s" % (arg["name"], arg["type"]))
-        if arg["comment"] is not None:
-            file.write(" %s" % arg["comment"])
+def parse_type_from_tag(tag):
+    return parse_type_from_str(text_content(tag))
+
+def parse_type_from_str(st):
+    match = re.search("^\(([^)]+)\) (.+)$", st)
+    if match:
+        return (fix_type(match.group(1)), None, fix_comment(match.group(2)))
+
+    match = re.search("^(\S+)\s+\(([^)]+)\) (.+)$", st)
+    if match:
+        return (fix_type(match.group(2)), match.group(1), fix_comment(match.group(3)))
+
+    return ("any", None, None)
+
+def find_by_class(tag, class_name):
+    return tag.find_all(attrs={ "class": class_name })
+
+def find_by_tag_and_text_content(tag, name, content):
+    def search(tag):
+        return tag.name == name and text_content(tag) == content
+
+    return tag.find(search)
+
+def text_content(tag):
+    return re.sub("\s+", " ", "".join(tag.strings)).strip()
+
+def following_text(child):
+    text = ""
+    while child:
+        if isinstance(child, Tag):
+            text += "".join(child.strings)
+        else:
+            text += str(child)
+        child = child.next_sibling
+
+    return re.sub("\s+", " ", text.strip())
+
+def next_element(tag):
+    tag = tag.next_sibling
+    while tag is not None and not isinstance(tag, Tag):
+        tag = tag.next_sibling
+    return tag
+
+def find_func_summary(soup, func):
+    href = "#%s" % func.path()
+
+    def finder(tag):
+        return tag.name == "a" and "href" in tag.attrs and tag["href"] == href and tag.parent.name == "div" and "function_name" in tag.parent["class"]
+
+    name = soup.find(finder)
+    if name is not None:
+        return next_element(name.parent)
+    print("  Missing %s" % href)
+    return None
+
+BASES = dict()
+
+class Base:
+    def __init__(self, namespace, name):
+        self.namespace = namespace
+        self.name = name
+        self.properties = dict()
+        self.functions = dict()
+
+    def is_ctor(self):
+        return not self.is_class() and len(self.functions) == 1 and None in self.functions
+
+    def write(self, file):
+        if self.is_ctor():
+            file.write("\n")
+            self.functions[None].write(file)
+        else:
+            file.write("\n---@class %s\n" % self.final_path())
+            for prop in self.properties.values():
+                prop.write(file)
+
+            file.write("local %s = {}\n" % self.final_path())
+
+            for func in self.functions.values():
+                file.write("\n")
+                func.write(file)
+
+    def add_item(self, item):
+        if isinstance(item, Property):
+            self.properties[item.name] = item
+        else:
+            self.functions[item.name] = item
+
+    def path(self):
+        return self.name
+
+    def final_path(self):
+        if self.name in TYPE_MAP:
+            return TYPE_MAP[self.name]
+
+        if len(BASES) == 1:
+            return self.namespace
+
+        if self.name == self.namespace and self.is_ctor():
+            return "%sConstructor" % self.name
+
+        if self.name == self.namespace:
+            for base in BASES.values():
+                if base != self and base.final_path() == self.name:
+                    return "%sNamespace" % self.name
+
+        return self.name
+
+    def is_class(self):
+        for func in self.functions.values():
+            if func.separator == ":":
+                return True
+        return False
+
+class Item:
+    base = None
+    separator = None
+    name = None
+
+    def __init__(self, namespace, name):
+        match = re.search("^([^:\.]+)([:\.].+)?$", name)
+
+        if not match.group(1) in BASES:
+            BASES[match.group(1)] = Base(namespace, match.group(1))
+        self.base = BASES[match.group(1)]
+
+        if match.group(2) is not None:
+            self.separator = match.group(2)[0]
+            self.name = match.group(2)[1:]
+
+        self.base.add_item(self)
+
+    def path(self):
+        if self.name is not None:
+            return "%s%s%s" % (self.base.path(), self.separator, self.name)
+        return self.base.path()
+
+    def final_path(self):
+        if self.name is not None:
+            return "%s%s%s" % (self.base.final_path(), self.separator, self.name)
+        return self.base.final_path()
+
+class Property(Item):
+    return_type = "any"
+    comment = None
+
+    def write(self, file):
+        if self.return_type == "any":
+            print("  %s has no known type" % self.path())
+        file.write("---@field %s %s" % (self.name, self.return_type))
+        if self.comment is not None:
+            file.write(" %s" % self.comment)
         file.write("\n")
 
-    if function["return"] is not None:
-        file.write("--- @return %s" % function["return"]["type"])
-        if function["return"]["comment"] is not None:
-            file.write(" # %s" % function["return"]["comment"])
+    def parse_type(self, tag):
+        (self.return_type, _, self.comment) = parse_type_from_tag(tag)
+
+class Argument(Item):
+    arg_type = "any"
+    comment = None
+
+    def __init__(self, function, name):
+        self.base = function
+        self.separator = "#"
+        self.name = name
+
+    def parse(self, tag):
+        (self.arg_type, _, self.comment) = parse_type_from_tag(tag)
+
+    def write(self, file):
+        file.write("---@param %s %s" % (self.name, self.arg_type))
+        if self.comment is not None:
+            file.write(" %s" % self.comment)
         file.write("\n")
-    file.write("function %s(" % (name))
-    file.write(", ".join([a["name"] for a in function["args"]]))
-    file.write(") end\n\n")
 
-def write_meta(file, props):
-    for (name, field) in props["fields"].items():
-        if field["type"] == "any":
-            print("  %s.%s has no known type" % (props["base"], name))
-        file.write("--- @field %s %s" % (name, field["type"]))
-        if field["comment"] is not None:
-            file.write(" %s" % field["comment"])
-        file.write("\n")
+class Function(Item):
+    comment = None
+    return_name = None
+    return_type = None
+    return_comment = None
 
-    file.write("local %s = {}\n\n" % (props["base"]))
+    def __init__(self, namespace, name):
+        match = re.search("^(.+)\((.*)\)$", name)
+        super().__init__(namespace, match.group(1))
+        self.arguments = dict()
 
-    for (name, function) in props["functions"].items():
-        write_function(file, props["base"] + name, function)
+        arg_names = match.group(2).strip()
+        if len(arg_names) > 0:
+            for arg_name in [s.strip() for s in arg_names.split(",")]:
+                self.arguments[arg_name] = Argument(self, arg_name)
+
+    def parse_argument(self, name, tag):
+        if not name in self.arguments:
+            print("  Unexpected argument %s" % name)
+        self.arguments[name].parse(tag)
+
+    def parse_return(self, tags):
+        (self.return_type, self.return_name, self.return_comment) = parse_type_from_str(following_text(tags[0]))
+
+    def write(self, file):
+        if self.comment is not None:
+            file.write("--- %s\n" % self.comment)
+        for arg in self.arguments.values():
+            arg.write(file)
+
+        if self.return_type is not None:
+            file.write("---@return %s" % self.return_type)
+            if self.return_comment is not None:
+                file.write(" # %s" % self.return_comment)
+            file.write("\n")
+
+        if not ":" in self.final_path() and not "." in self.final_path():
+            file.write("local ")
+        file.write("function %s(" % self.final_path())
+        file.write(", ".join([a.name for a in self.arguments.values()]))
+        file.write(") end\n")
 
 if len(sys.argv) < 2:
     print("Must provide the path to the Lightroom SDK")
@@ -88,17 +282,14 @@ shutil.rmtree(target)
 os.mkdir(target)
 
 f = open(os.path.join(target, "Globals.lua"), "w")
-f.write("""--- @meta
+f.write("""---@meta
+local LrLocalization = require "LrLocalization"
 
 --- The current plugin
---- @type LrPlugin
+---@type LrPlugin
 _PLUGIN = {}
 
---- Resolves the ZString using the available localisations.
---- @param zstr string The localized ZString
---- @param ... string[] Localization parameters
---- @return string
-function LOC(zstr, ...) end
+LOC = LrLocalization.LOC
 """)
 f.close()
 
@@ -110,158 +301,69 @@ for child in p.iterdir():
     if not namespace.startswith("Lr") or " " in namespace:
         continue
 
-    f = open(child)
-    lines = list(f)
-
-    idx = 0
-    while "<title>" not in lines[idx]:
-        idx += 1
-
-    title = lines[idx]
-    while "</title>" not in title:
-        idx += 1
-        title += lines[idx]
-
-    pos = title.find(child.stem)
-
-    if pos < 0:
-        print("Error parsing %s" % child.stem)
-        continue
-
-    title = title[0:pos]
-
-    is_class = "class" in title.lower()
-    is_namespace = "namespace" in title.lower()
+    BASES = dict()
 
     print("%s" % (child.stem))
 
-    classes = {}
-    ns_props = {
-        "fields": dict(),
-        "functions": dict(),
-        "base": child.stem,
-        "root": None,
-    }
+    f = open(child)
+    soup = BeautifulSoup(f.read(), "html5lib")
 
-    def props_for(name):
-        if name == child.stem:
-            return ns_props
+    for property_name in find_by_class(soup, "property_name"):
+        prop = Property(namespace, text_content(property_name))
+        property_value = next_element(property_name)
+        if property_value is not None and "property_summary" in property_value["class"]:
+            prop.parse_type(property_value)
 
-        if not name in classes:
-            classes[name] = {
-                "fields": dict(),
-                "functions": dict(),
-                "base": name if is_namespace else child.stem,
-            }
+    def find_functions(tag):
+        return text_content(tag) == "Functions" and tag.name == "h2"
+    functions = soup.find(find_functions)
 
-        return classes[name]
+    if functions is not None:
+        functions = next_element(functions)
+        for function_name in functions.find_all("dt", recursive = False):
+            func = Function(namespace, text_content(function_name))
 
-    while "\"module_summary_index\"" not in lines[idx]:
-        idx += 1
+            summary = find_func_summary(soup, func)
+            if summary is not None:
+                func.comment = text_content(summary)
 
-    while not lines[idx].startswith("</div>"):
-        match = re.search("<div class=\"function_name\"><a href=\".+\">(.+)([:\.].+)</a>\(", lines[idx])
-        if match:
-            function = { "name": match.group(1) + match.group(2), "return": None, "comment": None, "args": [] }
-            props = props_for(match.group(1))
-            props["functions"][match.group(2)] = function
+            function_def = next_element(function_name)
 
-        match = re.search("<div class=\"function_name\"><a href=\".+\">%s</a>\(" % child.stem, lines[idx])
-        if match:
-            function = { "name": child.stem, "return": None, "comment": None, "args": [] }
-            ns_props["root"] = function
-
-        match = re.search("<div class=\"function_summary\">(.+)</div>", lines[idx])
-        if match:
-            function["comment"] = fix_comment(function["name"], match.group(1))
-
-        match = re.search("<div class=\"property_name\"><a href=\".+\">(.+)\.(.+)</a></div>", lines[idx])
-        if match:
-            field = { "type": "any", "comment": None }
-            props = props_for(match.group(1))
-            props["fields"][match.group(2)] = field
-
-            idx += 1
-
-            field_path = "%s.%s" % (match.group(1), match.group(2))
-            match = re.search("^\s*<div class=\"property_summary\">\(([^)]+)\) (.+)", lines[idx])
-            if match:
-                field["type"] = fix_type(field_path, match.group(1))
-                field["comment"] = fix_comment(field_path, match.group(2))
-
-        idx += 1
-
-    function = None
-    while idx < len(lines):
-        match = re.search("<dt><a name=\".+\"></a><strong>%s</strong>\(" % child.stem, lines[idx])
-        if match:
-            if ns_props["root"] is None:
-                ns_props["root"] = { "name": child.stem, "return": None, "comment": None, "args": [] }
-            function = ns_props["root"]
-            idx += 2
-
-        match = re.search("<dt><a name=\".+\"></a><strong>(.+)([:\.].+)</strong>\(", lines[idx])
-        if match:
-            props = props_for(match.group(1))
-            if match.group(2) not in props["functions"]:
-                print("  Unexpected function %s%s" % (props["base"], match.group(2)))
-            function = props["functions"][match.group(2)]
-            idx += 2
-
-        if function is not None and "<dl class=\"param_list\">" in lines[idx]:
-            while "</dl>" not in lines[idx]:
-                match = re.search("<dt>\d+. (.+)</dt>", lines[idx])
-                if match:
-                    arg = {
-                        "name": match.group(1),
-                        "type": "any", "comment": None,
-                    }
-                    function["args"].append(arg)
-
-                    idx += 1
-                    arg_path = "%s#%s" % (function["name"], arg["name"])
-                    match = re.search("<dd>\(([^)]+)\) (.+)</dd>", lines[idx])
+            param_list = function_def.find(attrs = { "class": "param_list" })
+            if param_list is not None:
+                for param in param_list.find_all("dt"):
+                    match = re.search("^\d+\. (.+)$", text_content(param))
                     if match:
-                        arg["type"] = fix_type(arg_path, match.group(1))
-                        arg["comment"] = fix_comment(arg_path, match.group(2))
-                    else:
-                        print("  Failed to parse type for %s" % arg_path)
+                        param_name = match.group(1)
 
-                idx += 1
+                        param_info = next_element(param)
+                        func.parse_argument(param_name, param_info)
 
-        if function is not None and "<h3>Return value</h3>" in lines[idx]:
-            match = re.search("^\(([^)]+)\) (.+)", lines[idx + 1])
-            if match:
-                function["return"] = {
-                    "type": fix_type(function["name"], match.group(1)),
-                    "comment": fix_comment(function["name"], match.group(2)),
-                }
-            else:
-                print("  Failed to parse type for %s" % function["name"])
-            idx += 2
+            return_header = find_by_tag_and_text_content(function_def, "h3", "Return value")
+            if return_header is not None:
+                inner = return_header.next_sibling
+                return_tags = []
+                while inner is not None:
+                    return_tags.append(inner)
+                    inner = inner.next_sibling
 
-        idx += 1
+                func.parse_return(return_tags)
 
-    if is_class:
-        file_name = child.stem if not is_namespace else child.stem + "Instances"
-        class_file = open(os.path.join(target, "%s.lua" % file_name), "w")
-        class_file.write("--- @meta\n")
+    bases = sorted(BASES.values(), key=Base.final_path)
 
-        for name, class_props in classes.items():
-            class_file.write("\n--- @class %s\n" % (class_props["base"]))
+    if len(bases) > 0:
+        file = open(os.path.join(target, "%s.lua" % namespace), "w")
+        file.write("---@meta\n")
 
-            write_meta(class_file, class_props)
+        return_name = None
 
-        class_file.close()
+        for base in bases:
+            base.write(file)
 
-    if is_namespace:
-        namespace_file = open(os.path.join(target, "%s.lua" % ns_props["base"]), "w")
-        namespace_file.write("--- @meta %s\n\n--- @class %s\n" % (child.stem, ns_props["base"]))
+            if not base.is_class() and return_name is None:
+                return_name = base.final_path()
 
-        if ns_props["root"] is not None:
-            write_function(namespace_file, ns_props["base"],ns_props["root"])
-        else:
-            write_meta(namespace_file, ns_props)
+        if return_name is not None:
+            file.write("\nreturn %s\n" % return_name)
 
-        namespace_file.write("return %s\n" % ns_props["base"])
-        namespace_file.close()
+        file.close()

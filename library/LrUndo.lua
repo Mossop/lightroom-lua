@@ -1,6 +1,6 @@
---- @meta LrUndo
+---@meta
 
---- @class LrUndo
+---@class LrUndo
 local LrUndo = {}
 
 --- Returns true of the redo command is currently enabled.

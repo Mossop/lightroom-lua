@@ -1,6 +1,6 @@
---- @meta LrSelection
+---@meta
 
---- @class LrSelection
+---@class LrSelection
 local LrSelection = {}
 
 --- Clears all color labels from the selection.
@@ -16,8 +16,8 @@ function LrSelection.deselectActive() end
 function LrSelection.deselectOthers() end
 
 --- Extends the existing selection, selecting more photos to its beginning or end.
---- @param direction string either "left" or "right"
---- @param amount number number of photos to add to the selection in that direction
+---@param direction string either "left" or "right"
+---@param amount number number of photos to add to the selection in that direction
 function LrSelection.extendSelection(direction, amount) end
 
 --- Sets the flag state of the selction to pick.
@@ -27,7 +27,7 @@ function LrSelection.flagAsPick() end
 function LrSelection.flagAsReject() end
 
 --- Returns the color label assigned to the active photo, one of: "red", "yellow", "green", "blue", "purple", "other", or "none".
---- @return string # The current color label, one of: "red", "yellow", "green", "blue", "purple", "other", or "none".
+---@return string # The current color label, one of: "red", "yellow", "green", "blue", "purple", "other", or "none".
 function LrSelection.getColorLabel() end
 
 --- Returns the pick flag state of the active photo as a number (-1 = reject, 0 = none, 1 = pick).
@@ -64,11 +64,11 @@ function LrSelection.selectLastPhoto() end
 function LrSelection.selectNone() end
 
 --- Sets the color label of the selection, one of: "red", "yellow", "green", "blue", "purple", or "none".
---- @param label string A color label name, one of: "red", "yellow", "green", "blue", "purple", or "none".
+---@param label string A color label name, one of: "red", "yellow", "green", "blue", "purple", or "none".
 function LrSelection.setColorLabel(label) end
 
 --- Sets the rating of the selection.
---- @param rating number A number between 0 and 5.
+---@param rating number A number between 0 and 5.
 function LrSelection.setRating(rating) end
 
 --- Toggles the state of the Blue color label of the selection.

@@ -1,6 +1,6 @@
---- @meta LrSlideshow
+---@meta
 
---- @class LrSlideshow
+---@class LrSlideshow
 local LrSlideshow = {}
 
 --- Begins an impromptu slideshow using the photos currently in the filmstrip.
