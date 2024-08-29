@@ -26,6 +26,16 @@ TYPE_MAP = {
     "LOC": "LrLocalization.LOC",
 }
 
+TYPE_OVERRIDES = {
+    "LrHttp.get": "string, table",
+    "LrHttp.get@timeout": "number?",
+    "LrHttp.post": "string, table",
+    "LrHttp.post@timeout": "number?",
+    "LrHttp.post@totalSize": "number?",
+    "LrHttp.postMultipart": "string, table",
+    "LrHttp.postMultipart@timeout": "number?",
+}
+
 def strip_tags(st):
     return re.sub("<[^>]+>", "", st)
 
@@ -116,6 +126,7 @@ class Base:
         self.name = name
         self.properties = dict()
         self.functions = dict()
+        self.item_type = "any"
 
     def is_ctor(self):
         return not self.is_class() and len(self.functions) == 1 and None in self.functions
@@ -185,6 +196,13 @@ class Item:
 
         self.base.add_item(self)
 
+    def found_type(self):
+        if self.path() in TYPE_OVERRIDES:
+            return TYPE_OVERRIDES[self.path()]
+        if self.final_path() in TYPE_OVERRIDES:
+            return TYPE_OVERRIDES[self.final_path()]
+        return self.item_type
+
     def path(self):
         if self.name is not None:
             return "%s%s%s" % (self.base.path(), self.separator, self.name)
@@ -196,22 +214,20 @@ class Item:
         return self.base.final_path()
 
 class Property(Item):
-    return_type = "any"
     comment = None
 
     def write(self, file):
-        if self.return_type == "any":
+        if self.found_type() == "any":
             print("  %s has no known type" % self.path())
-        file.write("---@field %s %s" % (self.name, self.return_type))
+        file.write("---@field %s %s" % (self.name, self.found_type()))
         if self.comment is not None:
             file.write(" %s" % self.comment)
         file.write("\n")
 
     def parse_type(self, tag):
-        (self.return_type, _, self.comment) = parse_type_from_tag(tag)
+        (self.item_type, _, self.comment) = parse_type_from_tag(tag)
 
 class Argument(Item):
-    arg_type = "any"
     comment = None
 
     def __init__(self, function, name):
@@ -220,24 +236,30 @@ class Argument(Item):
         self.name = name
 
     def parse(self, tag):
-        (self.arg_type, _, self.comment) = parse_type_from_tag(tag)
+        (self.item_type, _, self.comment) = parse_type_from_tag(tag)
 
     def write(self, file):
-        file.write("---@param %s %s" % (self.name, self.arg_type))
+        file.write("---@param %s %s" % (self.name, self.found_type()))
         if self.comment is not None:
             file.write(" %s" % self.comment)
         file.write("\n")
 
+    def path(self):
+        return "%s@%s" % (self.base.path(), self.name)
+
+    def final_path(self):
+        return "%s@%s" % (self.base.final_path(), self.name)
+
 class Function(Item):
     comment = None
     return_name = None
-    return_type = None
     return_comment = None
 
     def __init__(self, namespace, name):
         match = re.search("^(.+)\((.*)\)$", name)
         super().__init__(namespace, match.group(1))
         self.arguments = dict()
+        self.item_type = None
 
         arg_names = match.group(2).strip()
         if len(arg_names) > 0:
@@ -250,7 +272,7 @@ class Function(Item):
         self.arguments[name].parse(tag)
 
     def parse_return(self, tags):
-        (self.return_type, self.return_name, self.return_comment) = parse_type_from_str(following_text(tags[0]))
+        (self.item_type, self.return_name, self.return_comment) = parse_type_from_str(following_text(tags[0]))
 
     def write(self, file):
         if self.comment is not None:
@@ -258,8 +280,8 @@ class Function(Item):
         for arg in self.arguments.values():
             arg.write(file)
 
-        if self.return_type is not None:
-            file.write("---@return %s" % self.return_type)
+        if self.found_type() is not None:
+            file.write("---@return %s" % self.found_type())
             if self.return_comment is not None:
                 file.write(" # %s" % self.return_comment)
             file.write("\n")
