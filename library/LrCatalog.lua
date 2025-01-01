@@ -88,6 +88,10 @@ function LrCatalog:createSmartCollection(name, searchDesc, parent, canReturnPrio
 ---@return LrPhoto[] # The new virtual copies.
 function LrCatalog:createVirtualCopies(copyName) end
 
+--- Deletes all empty masks for a set of photos.
+---@param photos LrPhoto[] The photos for which empty masks should be deleted. If no photos are passed, it will delete from all target photos.
+function LrCatalog:deleteAllEmptyMasks(photos) end
+
 --- Searches for a photo in this catalog by its absolute path in the file system.
 ---@param path string The absolute path to the photo file on disk.
 ---@param caseSensitivity any

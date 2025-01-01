@@ -11,7 +11,8 @@ function LrProgressScope:attachToFunctionContext(context) end
 function LrProgressScope:cancel() end
 
 --- Marks this progress scope as complete.
-function LrProgressScope:done() end
+---@param dismissalStrategy any
+function LrProgressScope:done(dismissalStrategy) end
 
 --- Returns the parent progress scope, if any.
 function LrProgressScope:getParentScope() end
