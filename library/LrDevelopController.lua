@@ -20,6 +20,10 @@ function LrDevelopController.addPointColorSwatch(swatchTable, isForMasking) end
 ---@param maskSubtype string subtype of tool to be created, only used when maskType is "rangeMask" or "aiSelection", one of: "color", "luminance", "depth", "subject", "sky", "background", "objects", "people".
 function LrDevelopController.addToCurrentMask(maskType, maskSubtype) end
 
+--- Count all spots on an image.
+---@return number # - returns the count of all spots on the selected image.
+function LrDevelopController.countAllSpots() end
+
 --- Create a new mask.
 ---@param maskType string type of tool to be created, one of: "brush", "gradient", "radialGradient", "rangeMask", "aiSelection".
 ---@param maskSubtype string subtype of tool to be created, only used when maskType is "rangeMask" or "aiSelection", one of: "color", "luminance", "depth", "subject", "sky", "background", "objects", "people".
@@ -47,6 +51,12 @@ function LrDevelopController.deleteMaskTool(id, param) end
 ---@return  boolean  # - true if deletion is successful. Returns false when the param 'deleteAtIndex' is out of bounds. i.e., no point color is present at the index provided.
 function LrDevelopController.deletePointColorSwatch(deleteAll, deleteAtIndex, isForMasking) end
 
+--- Delete selected spot.
+function LrDevelopController.deleteSelectedSpot() end
+
+--- Delete selected variation.
+function LrDevelopController.deleteSelectedVariation() end
+
 --- Duplicate and invert a mask.
 ---@param id any
 ---@param param string ID of the mask to be duplicated and inverted.
@@ -63,6 +73,10 @@ function LrDevelopController.getActiveColorGradingView() end
 ---@return table # A table of tables, one for each mask. Each mask entry is a table, one for each tool within that mask.
 function LrDevelopController.getAllMasks() end
 
+--- Get list of all spots on an image.
+---@return table # - returns list of all the spots on the selected image.
+function LrDevelopController.getAllSpots() end
+
 --- Returns the process version of the current photo.
 function LrDevelopController.getProcessVersion() end
 
@@ -71,8 +85,12 @@ function LrDevelopController.getProcessVersion() end
 ---@return [number, number] # the min and max value for the given parameter.
 function LrDevelopController.getRange(param) end
 
+--- Get Remove panel UI preferences.
+---@return table # returns a table with following fields - newSpotType: (string) Spot type used for creating new spots. Possible values: "heal_patchmatch", "heal", "clone". brushSize: (number) Brush size. Values from 1 to 100 are possible. brushFeather: (number) Brush feather. Values from 0 to 100 are possible. useGenerativeAI: (bool) Value of "use generatve AI" checkbox. detectObjects: (bool) Value of "detect objects" checkbox. toolOverlay: (string) Tool overlay mode. Possble values: "always", "auto", "selected", "never". visualizeSpots: (bool) Value of "visualize Spots" checkbox. visualizationThreshold: (number) Slider value of "visualize spots". Values from 0 to 100 are possible.
+function LrDevelopController.getRemovePanelPreferences() end
+
 --- Get the selected Lens Blur Bokeh.
----@return string # Name of the Bokeh, one of: "Circle", "SoapBubble", "Blade", "Ring", or "CatEye".
+---@return string # Name of the Bokeh, one of: "Circle", "SoapBubble", "Blade", "Ring", or "Anamorphic".
 function LrDevelopController.getSelectedLensBlurBokeh() end
 
 --- Get selected mask.
@@ -88,6 +106,18 @@ function LrDevelopController.getSelectedMaskTool() end
 ---@return number # - returns index of the select swatch/point-color.
 function LrDevelopController.getSelectedPointColorSwatchIndex(isForMasking) end
 
+--- Get selected spot index in Remove tool.
+---@return number # - returns index of selected spot in the list of all spots. Returns nil if no spot is selected.
+function LrDevelopController.getSelectedSpotIndex() end
+
+--- Get selected spot params in Remove tool.
+---@return table # returns spot params table.
+function LrDevelopController.getSelectedSpotParams() end
+
+--- Get selected spot type in Remove tool.
+---@return string,bool # returns spotType ( "heal_patchmatch" / "heal" / "clone" ) and boolean value on whether the spot uses generative AI ( valid only for "heal_patchmatch" spot type ).
+function LrDevelopController.getSelectedSpotType() end
+
 --- Reports which tool mode is active in Develop.
 ---@return string # current tool mode, one of: "loupe", "crop", "dust", "redeye", "masking", "point_color", "local_point_color", "depth_refinement".
 function LrDevelopController.getSelectedTool() end
@@ -102,14 +132,28 @@ function LrDevelopController.goToDevelopGraduatedFilter() end
 --- Open Radial Filter for the current photo.
 function LrDevelopController.goToDevelopRadialFilter() end
 
+--- Open Eye Correction tool for the current photo.
+---@param eyeCorrectionType any
+function LrDevelopController.goToEyeCorrection(eyeCorrectionType) end
+
 --- Open Healing for the current photo.
 function LrDevelopController.goToHealing() end
 
 --- Open Masking for the current photo.
 function LrDevelopController.goToMasking() end
 
+--- Open Remove tool for the current photo.
+---@param spotType any
+function LrDevelopController.goToRemove(spotType) end
+
 --- Open Spot Removal for the current photo.
 function LrDevelopController.goToSpotRemoval() end
+
+--- Go to next variation.
+function LrDevelopController.gotoNextVariation() end
+
+--- Go to previous variation.
+function LrDevelopController.gotoPreviousVariation() end
 
 --- Increments the value of a Develop adjustment.
 ---@param param string a Develop parameter name (see the beginning of this namespace's documentation for possible values).
@@ -126,6 +170,17 @@ function LrDevelopController.intersectWithCurrentMask(maskType, maskSubtype) end
 ---@param param string ID of the mask to be inverted.
 ---@return boolean # true if the mask was successfully inverted.
 function LrDevelopController.invertMask(id, param) end
+
+--- Move selected spot.
+---@param leftOrRight string? pass "left" to move left, "right" to move right. empty/nil value implies no horizontal movement is desired.
+---@param upOrDown string? pass "up" to move up, "down" to move down. empty/nil value implies no vertical movement is desired.
+---@param horizontalUnits number? no. of units to move horizontally. Valid only when 'leftOrRight' param is set appropriately. Default: 1
+---@param verticalUnits number? no. of units to move vertically. Valid only when 'upOrDown' param is set appropriately. Default: 1
+---@param shouldMoveSourceArea boolean? if true, move operation would be done on source area. Valid only if selected spot type is "heal" or "clone". Default: false
+function LrDevelopController.moveSelectedSpot(leftOrRight, upOrDown, horizontalUnits, verticalUnits, shouldMoveSourceArea) end
+
+--- Refresh selected spot.
+function LrDevelopController.refreshSelectedSpot() end
 
 --- Resets all Develop adjustments for the current photo.
 function LrDevelopController.resetAllDevelopAdjustments() end
@@ -205,7 +260,7 @@ function LrDevelopController.setAutoTone() end
 function LrDevelopController.setAutoWhiteBalance() end
 
 --- Set the Lens Blur Bokeh.
----@param bokeh string Name of the Bokeh to be set, one of: "Circle", "SoapBubble", "Blade", "Ring", or "CatEye".
+---@param bokeh string Name of the Bokeh to be set, one of: "Circle", "SoapBubble", "Blade", "Ring", or "Anamorphic".
 function LrDevelopController.setLensBlurBokeh(bokeh) end
 
 --- Sets the time threshold that determines when adjustments to different parameters will be grouped together into a single history state versus recorded separately.
@@ -215,6 +270,25 @@ function LrDevelopController.setMultipleAdjustmentThreshold(seconds) end
 --- Sets the process version of the current photo.
 ---@param value string the new process version, one of: "Version 1", "Version 2", "Version 3", "Version 4", "Version 5", or "Version 6".
 function LrDevelopController.setProcessVersion(value) end
+
+--- Set UI Preferences in Remove panel.
+---@param preferencesTable any
+---@return [ boolean, string ] # - returns true for success. For failures, returns false and an error message.
+function LrDevelopController.setRemovePanelPreferences(preferencesTable) end
+
+--- Set selected spot index in Remove tool.
+---@param spotIndex number index of spot that should be selected.
+---@return [ boolean, string ] # - returns true for success. For failures, returns false and an error message.
+function LrDevelopController.setSelectedSpotIndex(spotIndex) end
+
+--- Set selected spot params in Remove tool.
+---@param spotParams any
+function LrDevelopController.setSelectedSpotParams(spotParams) end
+
+--- Set selected spot type.
+---@param spotType string desired spot type. Allowed values: "heal_patchmatch", "heal", "clone".
+---@param useGenAI boolean when desired spot type is "heal_patchmatch", generative AI can be enabled using this parameter.
+function LrDevelopController.setSelectedSpotType(spotType, useGenAI) end
 
 --- Sets the number of seconds that tracking remains enabled after each adjustment is made.
 ---@param seconds number number of seconds to wait before turning off tracking.
