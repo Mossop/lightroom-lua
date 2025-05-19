@@ -57,6 +57,10 @@ function LrApplication.purchaseSource() end
 ---@return string # The unique ID, or "trial" if no serial number is installed (as in 30-day trial mode). As of Lightroom 4.1, if the running version of Lightroom is from the Mac App Store, an empty string will be returned. As of Lightroom 5.6, if the running version of Lightroom was installed from the Adobe Creative Cloud, an empty string will be returned.
 function LrApplication.serialNumberHash() end
 
+--- Quits the Lightroom Application First supported in version 14.3 of the Lightroom SDK.
+---@return None # This function does not return any value.
+function LrApplication.shutdown() end
+
 --- Retrieves the current version of the application as a user-displayable string (for instance, "2.0").
 ---@return string # Lightroom version
 function LrApplication.versionString() end

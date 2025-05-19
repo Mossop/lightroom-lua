@@ -17,7 +17,7 @@ function LrDevelopController.addPointColorSwatch(swatchTable, isForMasking) end
 
 --- Add to the current mask.
 ---@param maskType string type of tool to be created, one of: "brush", "gradient", "radialGradient", "rangeMask", "aiSelection".
----@param maskSubtype string subtype of tool to be created, only used when maskType is "rangeMask" or "aiSelection", one of: "color", "luminance", "depth", "subject", "sky", "background", "objects", "people".
+---@param maskSubtype string subtype of tool to be created, only used when maskType is "rangeMask" or "aiSelection", one of: "color", "luminance", "depth", "subject", "sky", "background", "objects", "people", "landscape".
 function LrDevelopController.addToCurrentMask(maskType, maskSubtype) end
 
 --- Count all spots on an image.
@@ -26,7 +26,7 @@ function LrDevelopController.countAllSpots() end
 
 --- Create a new mask.
 ---@param maskType string type of tool to be created, one of: "brush", "gradient", "radialGradient", "rangeMask", "aiSelection".
----@param maskSubtype string subtype of tool to be created, only used when maskType is "rangeMask" or "aiSelection", one of: "color", "luminance", "depth", "subject", "sky", "background", "objects", "people".
+---@param maskSubtype string subtype of tool to be created, only used when maskType is "rangeMask" or "aiSelection", one of: "color", "luminance", "depth", "subject", "sky", "background", "objects", "people", "landscape".
 function LrDevelopController.createNewMask(maskType, maskSubtype) end
 
 --- Increments the value of a Develop adjustment.
@@ -162,7 +162,7 @@ function LrDevelopController.increment(param, withClippingOn) end
 
 --- Intersect with the current mask.
 ---@param maskType string type of tool to be created, one of: "brush", "gradient", "radialGradient", "rangeMask", "aiSelection".
----@param maskSubtype string subtype of tool to be created, only used when maskType is "rangeMask" or "aiSelection", one of: "color", "luminance", "depth", "subject", "sky", "background", "objects", "people".
+---@param maskSubtype string subtype of tool to be created, only used when maskType is "rangeMask" or "aiSelection", one of: "color", "luminance", "depth", "subject", "sky", "background", "objects", "people", "landscape".
 function LrDevelopController.intersectWithCurrentMask(maskType, maskSubtype) end
 
 --- Invert a mask.
@@ -313,7 +313,7 @@ function LrDevelopController.stopTracking(isLocalParam) end
 
 --- Subtract from the current mask.
 ---@param maskType string type of tool to be created, one of: "brush", "gradient", "radialGradient", "rangeMask", "aiSelection".
----@param maskSubtype string subtype of tool to be created, only used when maskType is "rangeMask" or "aiSelection", one of: "color", "luminance", "depth", "subject", "sky", "background", "objects", "people".
+---@param maskSubtype string subtype of tool to be created, only used when maskType is "rangeMask" or "aiSelection", one of: "color", "luminance", "depth", "subject", "sky", "background", "objects", "people", "landscape".
 function LrDevelopController.subtractFromCurrentMask(maskType, maskSubtype) end
 
 --- Hide/unhide a mask.

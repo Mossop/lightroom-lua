@@ -48,6 +48,9 @@ function LrSelection.previousPhoto() end
 --- Clears the flag state of the selection.
 function LrSelection.removeFlag() end
 
+--- Removes the selection from the catalog.
+function LrSelection.removeFromCatalog() end
+
 --- Selects all photos in the filmstrip.
 function LrSelection.selectAll() end
 
