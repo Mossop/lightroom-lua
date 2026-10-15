@@ -15,7 +15,7 @@ function LrExportSettings.addVideoExportPresets(definition, pluginObject) end
 function LrExportSettings.applyVideoExportPreset(exportSettings, preset) end
 
 --- Retrieves the proper file extension to use for a file format.
----@param format (string | LrVideoExportPreset) A file format string as used by export settings (One of: 'ORIGINAL', 'JPEG', 'JXL', 'AVIF', 'PNG', 'TIFF', 'PSD', or 'DNG'), or, as of Lightroom 4.0, an LrVideoExportPreset object can also be passed in.
+---@param format (string | LrVideoExportPreset) A file format string as used by export settings (One of: 'ORIGINAL', 'JPEG', 'JXL', 'AVIF', 'PNG', 'TIFF', 'PSD', 'PSB', or 'DNG'), or, as of Lightroom 4.0, an LrVideoExportPreset object can also be passed in.
 ---@return string # The file extension to be used (such as 'jpg', 'png', 'mp4')
 function LrExportSettings.extensionForFormat(format) end
 

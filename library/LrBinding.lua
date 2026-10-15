@@ -6,7 +6,7 @@ local LrBinding = {}
 
 --- Creates a binding that determines if the values of all the source keys evaluate to true.
 ---@param optObject table? If specified, overrides the default bound table.
----@param keys (string[] | table[]) Additional arguments for the keys whose values are observed. An argument can be a simple string (a key name from the bound table), or a table that specifies a key from a different table, as a key-value pair: key A key name. bind_to_object or object The name of an observable table which overrides the current bound table.
+---@param keys (string[] | table) Additional arguments for the keys whose values are observed. An argument can be a simple string (a key name from the bound table), or a table that specifies a key from a different table, as a key-value pair: key A key name. bind_to_object or object Optional. The name of an observable table (see LrBinding.makePropertyTable) which overrides the current bound table.
 ---@return boolean # True if all of the source values evaluate to true, false otherwise.
 function LrBinding.andAllKeys(optObject, keys) end
 
@@ -49,7 +49,7 @@ function LrBinding.negativeOfKey(key, optObject) end
 
 --- Creates a binding that determines if the values of any of the source keys evaluate to true.
 ---@param optObject table? If specified, overrides the default bound table.
----@param keys table The keys whose values are observed. Entries can be simple key names from the bound table, or you can specify a key in another table, using a key-value pair, in which the value part can be a table with these items: key A key name bind_to_object or object Optional. The name of an observable table which overrides the current bound table.
+---@param keys (string[] | table) The keys whose values are observed. Entries can be simple key names from the bound table, or you can specify a key in another table, using a key-value pair, in which the value part can be a table with these items: key A key name bind_to_object or object Optional. The name of an observable table (see LrBinding.makePropertyTable) which overrides the current bound table.
 ---@return boolean # True if any of the source values evaluate to true, false otherwise.
 function LrBinding.orAllKeys(optObject, keys) end
 

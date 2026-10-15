@@ -20,6 +20,14 @@ local LrCatalog = {}
 ---@return LrPhoto # The photo that was added. If the photo cannot be added because the path does not exist or the file's format is not supported, the function throws an error.
 function LrCatalog:addPhoto(path, stackWithPhoto, position, metadataPresetUUID, developPresetUUID) end
 
+--- Applies a develop preset to the given photos.
+---@param photos LrPhoto[] The photos to which to apply the preset.
+---@param preset LrDevelopPreset The preset object.
+---@param plugin LrPlugin? The plug-in object with which the preset is associated, if the preset was obtained using LrApplication:getDevelopPresetsForPlugin().
+---@param presetAmount integer? Preset amount value. The range is 0 to 200.
+---@param updateAISettings boolean? Specifies if AI Settings should be auto updated after applying the preset. Default is false.
+function LrCatalog:applyDevelopPreset(photos, preset, plugin, presetAmount, updateAISettings) end
+
 --- If this catalog has at least private write access, the function returns.
 ---@param funcName string Name of a function whose value appears in the error message, if any.
 function LrCatalog:assertHasPrivateWriteAccess(funcName) end
@@ -169,6 +177,10 @@ function LrCatalog:getMultipleSelectedOrAllPhotos() end
 ---@return string # The path.
 function LrCatalog:getPath() end
 
+--- Partitions the given photos into those available for editing and those locked for a background operation.
+---@param photos LrPhoto[] The photos to check.
+function LrCatalog:getPhotosAvailableForEditing(photos) end
+
 --- Retrieves plug-in-specific data for this catalog, as previously set by catalog:setPropertyForPlugin().
 ---@param plugin (string | LrPlugin) Your plug-in object or the unique identifying string for the plug-in that declares this field.
 ---@param fieldId string The unique identifier of the metadata field.
@@ -193,9 +205,15 @@ function LrCatalog:getTargetPhoto() end
 ---@return LrPhoto[] # The photos.
 function LrCatalog:getTargetPhotos() end
 
+--- Paste settings from the clipboard to the given photos.
+---@param photos LrPhoto[] The photos to which to paste settings.
+---@param updateAISettings boolean? Specifies if AI Settings should be auto updated after applying. Default is false.
+---@return boolean # True if paste settings was executed for at least one photo.
+function LrCatalog:pasteSettings(photos, updateAISettings) end
+
 --- Sets the sources from which the grid photos are currently drawn.
 ---@param sources (string | array) Can be an array of objects, or a string that identifies a predefined set of photos. If an array, it can contain any mix of LrCollection, LrCollectionSet, LrPublishedCollection and LrPublishedCollectionSet, or it can contain one or more LrFolder objects. Do not mix collections with folders. If a string, it must be one of the string constants defined in these LrCatalog properties: kAllPhotos kQuickCollectionIdentifier kPreviousImport kTemporaryImages kLastCatalogExport kTargetCollection
----@return any
+---@return boolean # True on success, false if the sources are not correctly specified.
 function LrCatalog:setActiveSources(sources) end
 
 --- Sets a plug-in-specific metadata value for this catalog.

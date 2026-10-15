@@ -41,7 +41,7 @@ function LrCollection:removePhotos(photos) end
 
 --- Sets a new name for this collection.
 ---@param name string The new name.
----@return any
+---@return boolean # True on success, false if there is already a collection or collection set with the same name and parent.
 function LrCollection:setName(name) end
 
 --- Sets a new parent for this collection.

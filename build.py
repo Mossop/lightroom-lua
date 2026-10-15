@@ -24,6 +24,7 @@ TYPE_MAP = {
     "recursionGuard": "LrRecursionGuard",
     "exportSession": "LrExportSession",
     "LOC": "LrLocalization.LOC",
+    "export rendition": "LrExportRendition",
 }
 
 TYPE_OVERRIDES = {
@@ -39,10 +40,10 @@ TYPE_OVERRIDES = {
     "LrPlugin.enabled": "boolean",
     "LrProgressScopeConstructor": "LrProgressScope",
     "LrExportContext.exportSession": "LrExportSession",
-    "LrExportSession:renditions": "fun(): number, LrExportRendition | nil",
     "LrPublishedCollection:getRemoteId": "string | number | nil",
     "LrPublishedCollection:getRemoteUrl": "string | nil",
-    "LrExportRendition:waitForRender": "boolean, string"
+    "LrExportRendition:waitForRender": "boolean, string",
+    "LrDevelopController.setSelectedSpotParams@spotParams": "table",
 }
 
 def strip_tags(st):
@@ -52,7 +53,7 @@ def fix_comment(comment):
     return comment.strip()
 
 def fix_type(st):
-    print("    parse: %s" % st)
+    print("      fix: %s" % st)
     if "optional" in st:
         return fix_type(st.replace("optional", "").strip(" ,")) + "?"
 
@@ -80,13 +81,21 @@ def parse_type_from_tag(tag):
     return parse_type_from_str(text_content(tag))
 
 def parse_type_from_str(st):
-    match = re.search("^\(([^)]+)\) (.+)$", st)
+    print("    parse: %s" % st)
+    if re.search(r"""^(true|false)[\s\.,$]""", st, re.IGNORECASE):
+        return ("boolean", None, fix_comment(st))
+
+    match = re.search(r"""^\(([^)]+)\)\.? (.+)$""", st)
     if match:
         return (fix_type(match.group(1)), None, fix_comment(match.group(2)))
 
-    match = re.search("^(\S+)\s+\(([^)]+)\) (.+)$", st)
+    match = re.search(r"""^(\S+)\s+\(([^)]+)\) (.+)$""", st)
     if match:
         return (fix_type(match.group(2)), match.group(1), fix_comment(match.group(3)))
+
+    match = re.search(r"""^an iterator for all (.+?)s?(\.|$)""", st, re.IGNORECASE)
+    if match:
+        return ("fun(): number, %s | nil" % fix_type(match.group(1)), None, None)
 
     return (None, None, None)
 
@@ -137,6 +146,11 @@ def find_func_summary(soup, func):
         return next_element(name.parent)
     print("  Missing %s" % href)
     return None
+
+def warn_missing_type(item, is_prop = False):
+    print("  %s has no known type" % item.final_path())
+    # if not is_prop:
+    #     raise Exception("Failed to find type")
 
 BASES = dict()
 
@@ -241,7 +255,7 @@ class Property(Item):
 
     def write(self, file):
         if self.found_type() is None:
-            print("  %s has no known type" % self.final_path())
+            warn_missing_type(self, True)
         file.write("---@field %s %s" % (self.name, self.found_type() or "any"))
         if self.comment is not None:
             file.write(" %s" % self.comment)
@@ -261,9 +275,21 @@ class Argument(Item):
     def parse(self, tag):
         (self.item_type, _, self.comment) = parse_type_from_tag(tag)
 
+    def fixed_type(self):
+        if self.name == "id":
+            return "string"
+        if re.search(r"""^is[A-Z].+""", self.name):
+            return "boolean"
+
     def write(self, file):
         if self.found_type() is None:
-            print("  %s has no known type" % self.final_path())
+            if self.name == "_":
+                return
+
+            self.item_type = self.fixed_type()
+            if self.found_type() is None:
+                warn_missing_type(self)
+
         file.write("---@param %s %s" % (self.name, self.found_type() or "any"))
         if self.comment is not None:
             file.write(" %s" % self.comment)
@@ -298,7 +324,7 @@ class Function(Item):
     def parse_return(self, tags):
         (self.item_type, self.return_name, self.return_comment) = parse_type_from_str(tags_text_contents(tags))
         if self.item_type is None:
-            print("  %s has no known type" % self.final_path())
+            warn_missing_type(self)
             self.item_type = "any"
 
     def write(self, file):

@@ -4,7 +4,7 @@
 local LrXml = {}
 
 --- Creates an XML builder object (builderInstance) for constructing an XML document.
----@param omitDeclaration any
+---@param omitDeclaration boolean True to omit the XML declaration (<?xml version="1.0"?>) when this document is serialized to a string.
 ---@return XmlBuilderInstance # A new XML builder object.
 function LrXml.createXmlBuilder(omitDeclaration) end
 

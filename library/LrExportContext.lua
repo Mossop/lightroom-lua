@@ -15,7 +15,7 @@ function LrExportContext:configureProgress(args) end
 
 --- Creates an iterator for all renditions in this export.
 ---@param args table Arguments in named-argument syntax: exportContext (LrExportContext): This value is provided. progessScope (LrProgressScope): The progress scope. renderProgressPortion (number): This value is provided. stopIfCanceled (Boolean): True to stop the iterator prematurely if progress scope is canceled.
----@return any
+---@return fun(): number, LrExportRendition | nil
 function LrExportContext:renditions(args) end
 
 --- Starts the rendering process in a separate task.

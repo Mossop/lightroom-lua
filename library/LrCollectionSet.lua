@@ -30,7 +30,7 @@ function LrCollectionSet:getParent() end
 
 --- Sets a new name for this collection set.
 ---@param name string The new name.
----@return any
+---@return boolean # True on success, false if there is already a collection or collection set with the same name and parent.
 function LrCollectionSet:setName(name) end
 
 --- Sets a new parent for the collection set.

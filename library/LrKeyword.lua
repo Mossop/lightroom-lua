@@ -6,7 +6,6 @@
 local LrKeyword = {}
 
 --- Reports the type of this object.
----@param _ any
 ---@return string # 'LrKeyword'
 function LrKeyword.type(_) end
 
@@ -27,7 +26,7 @@ function LrKeyword:getName() end
 function LrKeyword:getParent() end
 
 --- Retrieves the photos that have this keyword.
----@return any
+---@return LrPhoto[] # The photo objects.
 function LrKeyword:getPhotos() end
 
 --- Retrieves the synonyms for this keyword.
@@ -36,7 +35,7 @@ function LrKeyword:getSynonyms() end
 
 --- Sets attributes for this keyword.
 ---@param keywordInfo table A table that contains these fields: keywordName: (string) The name of the keyword. synonyms: (table) The names of synonyms. includeOnExport: (Boolean) True to include the keyword when the photo is exported. ignoreCase: (Boolean) True to ignore the case of the keywords when updating. If any field is nil, does not change the value of that field.
----@return any
+---@return boolean # True on success, false if there is already a keyword which has the same name and parent.
 function LrKeyword:setAttributes(keywordInfo) end
 
 --- Sets the parent of this keyword.

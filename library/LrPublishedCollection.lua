@@ -80,7 +80,7 @@ function LrPublishedCollection:setCollectionSettings(settings) end
 
 --- Sets a new name for this published collection.
 ---@param name string The new name.
----@return any
+---@return boolean # True on success, false if there is already a published collection or collection set with the same name and parent.
 function LrPublishedCollection:setName(name) end
 
 --- Sets a new parent for this published collection.
