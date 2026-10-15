@@ -1,2 +1,4 @@
 /.venv
 /LrC_*
+__pycache__/
+.pytest_cache/

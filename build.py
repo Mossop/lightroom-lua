@@ -1,3 +1,4 @@
+import io
 import sys
 import os
 import re
@@ -116,7 +117,7 @@ def pure_text(tag):
 
 def tags_text_contents(tags):
     text = "".join([pure_text(s) for s in tags])
-    return re.sub("\s+", " ", text.strip())
+    return re.sub(r"\s+", " ", text.strip())
 
 def text_content(tag):
     return tags_text_contents(tag.children)
@@ -218,7 +219,7 @@ class Item:
     item_type = None
 
     def __init__(self, namespace, name):
-        match = re.search("^([^:\.]+)([:\.].+)?$", name)
+        match = re.search(r"^([^:\.]+)([:\.].+)?$", name)
 
         if not match.group(1) in BASES:
             BASES[match.group(1)] = Base(namespace, match.group(1))
@@ -307,7 +308,7 @@ class Function(Item):
     return_comment = None
 
     def __init__(self, namespace, name):
-        match = re.search("^(.+)\((.*)\)$", name)
+        match = re.search(r"^(.+)\((.*)\)$", name)
         super().__init__(namespace, match.group(1))
         self.arguments = dict()
 
@@ -345,19 +346,8 @@ class Function(Item):
         file.write(", ".join([a.name for a in self.arguments.values()]))
         file.write(") end\n")
 
-if len(sys.argv) < 2:
-    print("Must provide the path to the Lightroom SDK")
-    sys.exit(1)
 
-modules = os.path.join(sys.argv[1], "API Reference", "modules")
-p = Path(modules)
-target = "library"
-
-shutil.rmtree(target)
-os.mkdir(target)
-
-f = open(os.path.join(target, "Globals.lua"), "w")
-f.write("""---@meta
+GLOBALS = """---@meta
 local LrLocalization = require "LrLocalization"
 
 --- The current plugin
@@ -365,23 +355,14 @@ local LrLocalization = require "LrLocalization"
 _PLUGIN = {}
 
 LOC = LrLocalization.LOC
-""")
-f.close()
+"""
 
-for child in p.iterdir():
-    if child.suffix != ".html":
-        continue
-
-    namespace = child.stem
-    if not namespace.startswith("Lr") or " " in namespace:
-        continue
-
+def parse_module(namespace, html):
+    """Parses a module's API reference HTML, populating and returning BASES."""
+    global BASES
     BASES = dict()
 
-    print("%s" % (child.stem))
-
-    f = open(child)
-    soup = BeautifulSoup(f.read(), "html5lib")
+    soup = BeautifulSoup(html, "html5lib")
 
     for property_name in find_by_class(soup, "property_name"):
         prop = Property(namespace, text_content(property_name))
@@ -407,7 +388,7 @@ for child in p.iterdir():
             param_list = function_def.find(attrs = { "class": "param_list" })
             if param_list is not None:
                 for param in param_list.find_all("dt"):
-                    match = re.search("^\d+\. (.+)$", text_content(param))
+                    match = re.search(r"^\d+\. (.+)$", text_content(param))
                     if match:
                         param_name = match.group(1)
 
@@ -424,21 +405,64 @@ for child in p.iterdir():
 
                 func.parse_return(return_tags)
 
-    bases = sorted(BASES.values(), key=Base.final_path)
+    return BASES
 
-    if len(bases) > 0:
-        file = open(os.path.join(target, "%s.lua" % namespace), "w")
-        file.write("---@meta\n")
+def generate_module(namespace, html):
+    """Returns the Lua definitions for a module's API reference HTML, or None if it defines nothing."""
+    bases = sorted(parse_module(namespace, html).values(), key=Base.final_path)
 
-        return_name = None
+    if len(bases) == 0:
+        return None
 
-        for base in bases:
-            base.write(file)
+    file = io.StringIO()
+    file.write("---@meta\n")
 
-            if not base.is_class() and return_name is None:
-                return_name = base.final_path()
+    return_name = None
 
-        if return_name is not None:
-            file.write("\nreturn %s\n" % return_name)
+    for base in bases:
+        base.write(file)
 
-        file.close()
+        if not base.is_class() and return_name is None:
+            return_name = base.final_path()
+
+    if return_name is not None:
+        file.write("\nreturn %s\n" % return_name)
+
+    return file.getvalue()
+
+def build(sdk, target):
+    modules = Path(sdk, "API Reference", "modules")
+
+    shutil.rmtree(target, ignore_errors = True)
+    os.mkdir(target)
+
+    with open(os.path.join(target, "Globals.lua"), "w") as f:
+        f.write(GLOBALS)
+
+    for child in modules.iterdir():
+        if child.suffix != ".html":
+            continue
+
+        namespace = child.stem
+        if not namespace.startswith("Lr") or " " in namespace:
+            continue
+
+        print("%s" % (child.stem))
+
+        with open(child) as f:
+            lua = generate_module(namespace, f.read())
+
+        if lua is not None:
+            with open(os.path.join(target, "%s.lua" % namespace), "w") as f:
+                f.write(lua)
+
+def main(argv):
+    if len(argv) < 2:
+        print("Must provide the path to the Lightroom SDK")
+        return 1
+
+    build(argv[1], "library")
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv))
