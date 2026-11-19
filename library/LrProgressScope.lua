@@ -11,10 +11,11 @@ function LrProgressScope:attachToFunctionContext(context) end
 function LrProgressScope:cancel() end
 
 --- Marks this progress scope as complete.
----@param dismissalStrategy any
+---@param dismissalStrategy any?
 function LrProgressScope:done(dismissalStrategy) end
 
 --- Returns the parent progress scope, if any.
+---@return LrProgressScope?
 function LrProgressScope:getParentScope() end
 
 --- Retrieves the portion of this task that has been marked as completed.
@@ -68,7 +69,7 @@ function LrProgressScope:setIndeterminate() end
 function LrProgressScope:setLowUiPriority(inPrior) end
 
 --- Allows or disallows capability of user to pause this progress scope.
----@param pausable any
+---@param pausable boolean
 ---@param cancelable boolean True to allow, false to disallow it.
 function LrProgressScope:setPausable(pausable, cancelable) end
 

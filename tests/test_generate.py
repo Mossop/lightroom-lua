@@ -499,10 +499,27 @@ def test_unparseable_entry_in_return_values_list_is_any():
     assert "---@return any" in lua
 
 
-def test_override_replaces_all_return_values(monkeypatch):
+def test_override_of_each_return_value_keeps_comments(monkeypatch):
     monkeypatch.setitem(build.TYPE_OVERRIDES, "LrFoo.bar", "string, table?")
     html = module_html(functions=[return_values("LrFoo.bar", ["(string) The body.", "(table) The headers."])])
 
     lua = lines(generate_module("LrFoo", html))
-    assert "---@return string, table?" in lua
+    i = lua.index("function LrFoo.bar() end")
+    assert lua[i - 2:i] == ["---@return string # The body.", "---@return table? # The headers."]
+
+
+def test_override_with_a_different_number_of_return_values(monkeypatch):
+    monkeypatch.setitem(build.TYPE_OVERRIDES, "LrFoo.bar", "boolean, string, number")
+    html = module_html(functions=[return_values("LrFoo.bar", ["(string) The body.", "(table) The headers."])])
+
+    lua = lines(generate_module("LrFoo", html))
+    i = lua.index("function LrFoo.bar() end")
+    assert lua[i - 1] == "---@return boolean, string, number"
     assert not any(l.startswith("---@return string #") for l in lua)
+
+
+def test_extra_fields(monkeypatch):
+    monkeypatch.setitem(build.EXTRA_FIELDS, "LrFoo", {"SHA256": "LrFooFactory"})
+    html = module_html(functions=[function("LrFoo.bar")])
+
+    assert "---@field SHA256 LrFooFactory" in lines(generate_module("LrFoo", html))

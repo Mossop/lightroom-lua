@@ -1,8 +1,8 @@
 ---@meta
 
 ---@class LrCatalog
----@field hasPrivateWriteAccess any
----@field hasWriteAccess any
+---@field hasPrivateWriteAccess boolean
+---@field hasWriteAccess boolean
 ---@field kAllPhotos string The "All Photographs" collection in the "Catalog" section of the library left-side panel, see LrCatalog:setActiveSources().
 ---@field kLastCatalogExport string The "Last catalog export" collection in the "Catalog" section of the library left-side panel.
 ---@field kPreviousImport string The "Previous import" collection in the "Catalog" section of the library left-side panel, see LrCatalog:setActiveSources().
@@ -117,7 +117,7 @@ function LrCatalog:deleteAllEmptyMasks(photos) end
 
 --- Searches for a photo in this catalog by its absolute path in the file system.
 ---@param path string The absolute path to the photo file on disk.
----@param caseSensitivity any
+---@param caseSensitivity boolean?
 ---@return LrPhoto? # The corresponding photo object, or nil if no such photo is in the catalog.
 function LrCatalog:findPhotoByPath(path, caseSensitivity) end
 

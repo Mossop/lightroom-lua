@@ -29,7 +29,7 @@ function LrFtp.ftpPathValidator(view, inValue) end
 function LrFtp.makeFtpPresetPopup(params) end
 
 --- Prompts the user for a password, but only if the preset was created with 'store password' unchecked.
----@param ftpSettings any
+---@param ftpSettings table
 ---@return boolean # True if the password was successfully entered. False if the user cancelled the prompt.
 function LrFtp.queryForPasswordIfNeeded(ftpSettings) end
 
@@ -49,7 +49,7 @@ function LrFtpConnection:disconnect() end
 
 --- Tests for the existance of a file or directory on the remote system.
 ---@param filename string The name of the resource to test.
----@return boolean, string # On success: False if the resource does not exist, 'file' if it exists as a file, and 'directory' if it exist as a directory On failure: Nil and an error message.
+---@return (boolean | string)?, string? # On success: False if the resource does not exist, 'file' if it exists as a file, and 'directory' if it exist as a directory On failure: Nil and an error message.
 function LrFtpConnection:exists(filename) end
 
 --- Retrieves the contents of a file or directory on the remote server and returns it as a string.

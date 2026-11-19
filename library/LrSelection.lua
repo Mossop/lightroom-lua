@@ -31,9 +31,11 @@ function LrSelection.flagAsReject() end
 function LrSelection.getColorLabel() end
 
 --- Returns the pick flag state of the active photo as a number (-1 = reject, 0 = none, 1 = pick).
+---@return number
 function LrSelection.getFlag() end
 
 --- Returns the rating of the selection as a number (0-5).
+---@return number
 function LrSelection.getRating() end
 
 --- Increases the rating of the selection.

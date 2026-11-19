@@ -15,6 +15,7 @@ function LrExportSession:doExportOnCurrentTask() end
 function LrExportSession:doExportOnNewTask() end
 
 --- Creates an iterator with which to walk the list of photos to be exported.
+---@return fun(): LrPhoto?
 function LrExportSession:photosToExport() end
 
 --- Records the unique identifier assigned to a published collection.
@@ -31,10 +32,12 @@ function LrExportSession:removePhoto(photo) end
 
 --- Creates an iterator with which to walk the list of renditions generated for this session's photos.
 ---@param params table? Arguments in named argument syntax; all arguments are optional. exportContext (LrExportContext): An export context. progressScope (LrProgressScope): A progress scope. renderProgressPortion (number): Percentage completion for progress scope when done, [0..1]. stopIfCanceled (Boolean): True to stop the iterator prematurely if progress scope is canceled. The flag is ignored if progressScope is not supplied.
+---@return fun(): number, LrExportRendition | nil
 function LrExportSession:renditions(params) end
 
 --- Creates an iterator with which to walk an export filter's renditions-to-satisfy list.
 ---@param params table? Arguments in named argument syntax. plugin (_PLUGIN object) renditionsToSatisfy (array of LrExportRendition): The list of renditions that this filter must satisfy. filterSettings (function, optional): If present, this function can alter the export settings of the rendition. It is called with two arguments: the individual rendition to be satisfied, and a copy of its export settings that can be modified in place. It can optionally return a string, which will be used as the new path to the file.
+---@return fun(): LrExportRendition?, LrExportRendition?
 function LrExportSession:renditionsForFilter(params) end
 
 --- Reports the type of this object.

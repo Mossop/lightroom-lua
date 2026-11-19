@@ -27,6 +27,7 @@ function LrApplicationView.gridView() end
 function LrApplicationView.gridViewStyle() end
 
 --- Returns true if the secondary window is currently on.
+---@return boolean
 function LrApplicationView.isSecondaryDisplayOn() end
 
 --- Changes the Screen Mode.

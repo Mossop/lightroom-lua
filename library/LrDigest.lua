@@ -1,6 +1,8 @@
 ---@meta
 
 ---@class LrDigest
+---@field SHA256 LrDigestFactory
+---@field SHA512 LrDigestFactory
 local LrDigest = {}
 LrDigest.HMAC = {}
 

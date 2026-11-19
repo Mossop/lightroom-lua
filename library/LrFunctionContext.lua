@@ -22,48 +22,48 @@ local LrFunctionContextNamespace = {}
 ---@param name string A name for this context (used only for debugging)
 ---@param func function The main function to call.
 ---@param ... any
----@return any # The call results; that is, whatever is returned from the main function.
+---@return any ... # The call results; that is, whatever is returned from the main function.
 function LrFunctionContextNamespace.callWithContext(name, func, ...) end
 
 --- Same as callWithContext, but calls the function in a fashion that disables LrTasks.yield from working.
 ---@param name string A name for this context (used only for debugging)
 ---@param func function The main function to call.
 ---@param ... any
----@return any # The call results; that is, whatever is returned from the main function.
+---@return any ... # The call results; that is, whatever is returned from the main function.
 function LrFunctionContextNamespace.callWithContext_noyield(name, func, ...) end
 
 --- Runs the main function in a known-safe function environment.
 ---@param func function The main function to call, with an empty environment.
 ---@param ... any Further arguments are passed through to the function.
----@return any # The call results; that is, whatever is returned from the main function.
+---@return any ... # The call results; that is, whatever is returned from the main function.
 function LrFunctionContextNamespace.callWithEmptyEnvironment(func, ...) end
 
 --- Runs the main function in a caller-provided function environment.
 ---@param func function The main function to call, with an empty environment.
 ---@param env table The function environment to use.
 ---@param ... any Further arguments are passed through to the function.
----@return any # The call results; that is, whatever is returned from the main function.
+---@return any ... # The call results; that is, whatever is returned from the main function.
 function LrFunctionContextNamespace.callWithEnvironment(func, env, ...) end
 
 --- Makes a protected call, like Lua's standard pcall, but calls all of the cleanup handlers before returning control.
 ---@param name string A name for this context (used only for debugging)
 ---@param func function The main function to call.
 ---@param ... any
----@return any # The pcall results; that is, a success/failure value, followed by any other return values of the called function.
+---@return boolean, any ... # The pcall results; that is, a success/failure value, followed by any other return values of the called function.
 function LrFunctionContextNamespace.pcallWithContext(name, func, ...) end
 
 --- Same as pcallWithContext, but calls the function in a fashion that disables LrTasks.yield from working.
 ---@param name string A name for this context (used only for debugging)
 ---@param func function The main function to call.
 ---@param ... any
----@return any # The pcall results; that is, a success/failure value, followed by any other return values of the called function.
+---@return boolean, any ... # The pcall results; that is, a success/failure value, followed by any other return values of the called function.
 function LrFunctionContextNamespace.pcallWithContext_noyield(name, func, ...) end
 
 --- Runs the main function in a known-safe function environment, catching any exceptions that occur.
 ---@param func function The main function to call, with an empty environment.
 ---@param ... any Further arguments are passed through to the function.
 ---@return boolean # True if the call succeeded, false if an error occurred
----@return any # The call results; that is, whatever is returned from the main function.
+---@return any ... # The call results; that is, whatever is returned from the main function.
 function LrFunctionContextNamespace.pcallWithEmptyEnvironment(func, ...) end
 
 --- Runs the main function in a caller-provided function environment, catching any exceptions that occur.
@@ -71,7 +71,7 @@ function LrFunctionContextNamespace.pcallWithEmptyEnvironment(func, ...) end
 ---@param env table The function environment to use.
 ---@param ... any Further arguments are passed through to the function.
 ---@return boolean # True if the call succeeded, false if an error occurred
----@return any # The call results; that is, whatever is returned from the main function.
+---@return any ... # The call results; that is, whatever is returned from the main function.
 function LrFunctionContextNamespace.pcallWithEnvironment(func, env, ...) end
 
 --- Runs the main function in an asynchronous/cooperative task, then calls any cleanup handlers.

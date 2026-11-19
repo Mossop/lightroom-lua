@@ -98,7 +98,7 @@ function LrPhoto:getNameViaPreset(filenamePresetId, customString, sequenceNumber
 ---@param optVersion number? The version number for the field (only valid in schema update handlers).
 ---@param noThrow boolean? True to return an error (nil, error) instead of throwing an exception on error. (First supported in version 3.0 of the Lightroom SDK.)
 ---@return any # The value of the specified metadata property as the appropriate data type, or nil if not applicable. If no key is specified, returns a table of all available metadata fields as key/value pairs.
----@return any
+---@return string?
 function LrPhoto:getPropertyForPlugin(plugin, fieldId, optVersion, noThrow) end
 
 --- Retrieves unformatted metadata from this photo.

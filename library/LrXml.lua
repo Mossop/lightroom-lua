@@ -54,7 +54,7 @@ local XmlDomInstance = {}
 function XmlDomInstance:attributes() end
 
 --- Retrieves a child of this element node by index.
----@param index any
+---@param index number
 ---@return XmlDomInstance? # The child node, or nil if this is not an element node.
 function XmlDomInstance:childAtIndex(index) end
 

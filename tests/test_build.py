@@ -94,8 +94,6 @@ class TestRealSdk:
         # Informal instance names in the docs.
         ("LrXml", "---@class XmlBuilderInstance"),
         ("LrXml", "---@class XmlDomInstance"),
-        # A namespace constant documented without its namespace.
-        ("LrView", "---@field kIgnoredView any"),
         # The module returns its namespace even when another table sorts first.
         ("LrDigest", "return LrDigest"),
         ("LrDigest", "LrDigest.HMAC = {}"),
@@ -111,6 +109,11 @@ class TestRealSdk:
         ("LrHttp", "---@param timeout number?"),
         ("LrPlugin", "---@field id string"),
         ("LrDevelopController", "---@param spotParams table"),
+        # A namespace constant documented without its namespace.
+        ("LrView", "---@field kIgnoredView table"),
+        ("LrView", "---@return LrViewFactory # The factory object."),
+        ("LrDigest", "---@field SHA256 LrDigestFactory"),
+        ("LrFunctionContext", "---@return any ... # The call results"),
     ])
     def test_overrides_are_applied(self, library, module, line):
         assert any(l.startswith(line) for l in self.module(library, module))

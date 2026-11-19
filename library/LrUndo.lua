@@ -4,9 +4,11 @@
 local LrUndo = {}
 
 --- Returns true of the redo command is currently enabled.
+---@return boolean
 function LrUndo.canRedo() end
 
 --- Returns true of the undo command is currently enabled.
+---@return boolean
 function LrUndo.canUndo() end
 
 --- Redoes the last undone history state.

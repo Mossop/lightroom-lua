@@ -92,6 +92,7 @@ function LrDevelopController.duplicateAndInvertMask(id, param) end
 function LrDevelopController.editInPhotoshop() end
 
 --- Get Active Color Grading View.
+---@return string
 function LrDevelopController.getActiveColorGradingView() end
 
 --- Get all masks.
@@ -108,6 +109,7 @@ function LrDevelopController.getAllSpots(whichFeature) end
 function LrDevelopController.getEnhancePanelState() end
 
 --- Returns the process version of the current photo.
+---@return string
 function LrDevelopController.getProcessVersion() end
 
 --- Gets the min and max value of a Develop adjustment.

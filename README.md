@@ -2,7 +2,7 @@
 
 Type-annotated definitions of the [Lightroom Classic SDK](https://developer.adobe.com/lightroom-classic/) API for the [Lua Language Server](https://luals.github.io/) (LuaLS). With them, a Lightroom plug-in gets completion, hover documentation and type checking for `LrCatalog`, `LrPhoto`, `LrView` and the rest of the SDK.
 
-The definitions in [`library/`](library) are generated from the HTML API reference that ships with the SDK. The current definitions come from **Lightroom Classic SDK 15.3**.
+The definitions in [`library/`](library) are generated from the HTML API reference that ships with the SDK. The current definitions come from **Lightroom Classic SDK 16.0**.
 
 ## Using the definitions
 
@@ -31,7 +31,7 @@ The SDK is not included in this repository. Download it from Adobe, extract it i
 
 ```sh
 mise run setup        # install Python dependencies into .venv
-python build.py LrC_15.3_202604090947-8f3672ed.release_SDK
+python build.py LrC_16.0_202611041403-7ac14c66.release_SDK
 ```
 
 This deletes and rewrites `library/`. Review the diff before committing it.
@@ -68,7 +68,7 @@ This deletes and rewrites `library/`. Review the diff before committing it.
    - **Nil in the description.** A parameter or return value becomes optional when the first sentence of its description says "or nil", "nil to/for/if/when", or "can/may be nil", or when any sentence starts with "Nil" or "Returns nil". Later sentences often describe a table's fields or a callback's arguments, so other phrases there are ignored.
    - **Constructors**: a module constructor such as `LrColor( … )` returns the module's instance class when its return value isn't otherwise understood.
    - Anything else becomes `any`. The build logs a "has no known type" warning for it.
-4. **Overrides.** `TYPE_OVERRIDES` fixes up cases the heuristics get wrong. It is keyed by the documented path (`LrHttp.get`) or the generated path (`LrPublishedCollection:getRemoteId`), with `@arg` for parameters.
+4. **Overrides.** `TYPE_OVERRIDES` fixes up cases the heuristics get wrong, or where the docs give no type at all. It is keyed by the documented path (`LrHttp.get`) or the generated path (`LrPublishedCollection:getRemoteId`), with `@arg` for parameters. If an override for a function's return gives the same number of values as its "Return values" list, each value keeps its own comment. `EXTRA_FIELDS` adds fields that are only mentioned in a module's prose, like `LrDigest.SHA256`.
 5. **Output.** Each module becomes `library/<Module>.lua`, holding `---@class`, `---@field`, `---@param` and `---@return` annotations and empty function stubs. `Globals.lua` declares `_PLUGIN` and `LOC`.
 
 ## Tests
@@ -89,12 +89,11 @@ Known bugs are recorded as strict `xfail` tests whose assertion is the *correct*
 
 ## Known issues
 
-These are the cases where the generator currently produces wrong or unhelpful types. Each one, except the last, has an `xfail` test.
+These are the cases where the generator currently produces wrong or unhelpful types. Each one has an `xfail` test.
 
 | Doc text | Generated | Should be |
 | --- | --- | --- |
 | A return value of just `true` | not recognised | `boolean` (the `$` in the regex character class is literal) |
 | A function with no `function_summary` | takes the next element's text as its comment | no comment. The current SDK does not hit this |
-| `(view description)` (`LrView.conditionalItem`) | `view description` | probably `table`. **No test yet** |
 
 Many properties are only described in prose, such as "Reports whether the plug-in is enabled.", so they are typed `any` unless they have an override.

@@ -47,6 +47,62 @@ TYPE_OVERRIDES = {
     "LrPublishedCollection:getRemoteId": "string | number | nil",
     "LrPublishedCollection:getRemoteUrl": "string | nil",
     "LrDevelopController.setSelectedSpotParams@spotParams": "table",
+
+    # Parameters and properties with no description.
+    "LrCatalog:findPhotoByPath@caseSensitivity": "boolean?",
+    "LrProgressScope:done@dismissalStrategy": "any?",
+    "LrProgressScope:setPausable@pausable": "boolean",
+    "XmlDomInstance:childAtIndex@index": "number",
+    "LrFtp.queryForPasswordIfNeeded@ftpSettings": "table",
+    "LrCatalog.hasWriteAccess": "boolean",
+    "LrCatalog.hasPrivateWriteAccess": "boolean",
+    "LrView.kIgnoredView": "table",
+
+    # Return values only described in the function's summary.
+    "LrApplicationView.isSecondaryDisplayOn": "boolean",
+    "LrUndo.canUndo": "boolean",
+    "LrUndo.canRedo": "boolean",
+    "LrSelection.getFlag": "number",
+    "LrSelection.getRating": "number",
+    "LrDevelopController.getProcessVersion": "string",
+    "LrDevelopController.getActiveColorGradingView": "string",
+    "LrProgressScope:getParentScope": "LrProgressScope?",
+    "LrExportSession:photosToExport": "fun(): LrPhoto?",
+    "LrExportSession:renditions": "fun(): number, LrExportRendition | nil",
+    "LrExportSession:renditionsForFilter": "fun(): LrExportRendition?, LrExportRendition?",
+    "LrFilterContext:renditions": "fun(): LrExportRendition?, LrExportRendition?",
+    "LrView.osFactory": "LrViewFactory",
+    "LrSocket.bind": "LrSocket",
+
+    # "view description" and "Either the view description or kIgnoredView".
+    "LrView.conditionalItem": "table",
+    "LrView.conditionalItem@view": "table",
+
+    # Return values that are only described in prose.
+    "LrFunctionContext.callWithContext": "any ...",
+    "LrFunctionContext.callWithContext_noyield": "any ...",
+    "LrFunctionContext.callWithEmptyEnvironment": "any ...",
+    "LrFunctionContext.callWithEnvironment": "any ...",
+    "LrFunctionContext.pcallWithContext": "boolean, any ...",
+    "LrFunctionContext.pcallWithContext_noyield": "boolean, any ...",
+    "LrFunctionContext.pcallWithEmptyEnvironment": "boolean, any ...",
+    "LrFunctionContext.pcallWithEnvironment": "boolean, any ...",
+    "LrPhoto:getPropertyForPlugin": "any, string?",
+    "LrFtpConnection:exists": "(boolean | string)?, string?",
+}
+
+# The view-creating methods of LrView.osFactory() don't document a return value.
+for name in ["catalog_photo", "checkbox", "color_well", "column", "combo_box", "edit_field", "group_box",
+             "password_field", "picture", "popup_menu", "push_button", "radio_button", "row", "scrolled_view",
+             "separator", "simple_list", "slider", "spacer", "static_text", "tab_view", "tab_view_item", "view"]:
+    TYPE_OVERRIDES["LrViewFactory:%s" % name] = "LrView"
+
+# Fields that are only mentioned in a module's prose, keyed by the generated class name.
+EXTRA_FIELDS = {
+    "LrDigest": {
+        "SHA256": "LrDigestFactory",
+        "SHA512": "LrDigestFactory",
+    },
 }
 
 def strip_tags(st):
@@ -273,6 +329,8 @@ class Base:
             file.write("\n---@class %s\n" % self.final_path())
             for prop in self.properties.values():
                 prop.write(file)
+            for (name, field_type) in EXTRA_FIELDS.get(self.final_path(), {}).items():
+                file.write("---@field %s %s\n" % (name, field_type))
 
             file.write("local %s = {}\n" % self.final_path())
 
@@ -481,8 +539,14 @@ class Function(Item):
 
         override = super().found_type()
         if override is not None:
-            comment = self.returns[0][1] if len(self.returns) == 1 else None
-            self.write_return(file, override, comment)
+            types = override.split(", ")
+            if len(self.returns) > 1 and len(types) == len(self.returns):
+                # Keep each documented value's comment.
+                for (return_type, (_, comment)) in zip(types, self.returns):
+                    self.write_return(file, return_type, comment)
+            else:
+                comment = self.returns[0][1] if len(self.returns) == 1 else None
+                self.write_return(file, override, comment)
         else:
             for (return_type, comment) in self.returns:
                 self.write_return(file, return_type, comment)
