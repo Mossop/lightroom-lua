@@ -25,7 +25,7 @@ function LrCollection:getParent() end
 function LrCollection:getPhotos() end
 
 --- Retrieves the search description for a smart collection.
----@return any
+---@return table # Table containing the search description.
 function LrCollection:getSearchDescription() end
 
 --- Reports whether this collection is a smart collection.

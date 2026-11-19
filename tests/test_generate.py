@@ -187,6 +187,16 @@ def test_function_without_return_value():
     assert not any(l.startswith("---@return") for l in lines(generate_module("LrFoo", html)))
 
 
+@pytest.mark.parametrize("returns", [
+    "(<code>None</code>) This function does not return any value.",
+    "(nil) Returns nothing.",
+])
+def test_documented_lack_of_return_value(returns):
+    html = module_html(functions=[function("LrFoo.bar", returns=returns)])
+
+    assert not any(l.startswith("---@return") for l in lines(generate_module("LrFoo", html)))
+
+
 def test_unparseable_return_value_is_any():
     html = module_html(functions=[function("LrFoo.bar", returns="Whatever the callback returned.")])
 

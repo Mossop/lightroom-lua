@@ -21,7 +21,7 @@ function LrPublishedCollectionSet:getChildCollections() end
 function LrPublishedCollectionSet:getChildren() end
 
 --- Retrieves an information summary about this published collection set.
----@return any
+---@return table # A table with the following information: name: Name of the published collection set. localIdentifier: Internal ID number of the collection set (the local identifier). remoteId: The ID of the collection set on the remote service. remoteUrl: URL of the collection set (if applicable) as published. isDefaultCollection: (Boolean) True if this is the default collection. parents: (array of tables) Information about any published collection sets that contain this collection. An array of tables, each containing name, localCollectionId, remoteCollectionId, and publishedUrl. collectionSettings: (table) Any collection-specific settings that have been stored by the plug-in. publishSettings: (table) Publish settings for this plug-in.
 function LrPublishedCollectionSet:getCollectionSetInfoSummary() end
 
 --- Retrieves the current name of this set.

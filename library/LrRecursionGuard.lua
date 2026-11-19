@@ -11,7 +11,7 @@ function LrRecursionGuard:performWithGuard(func, ...) end
 
 --- Creates a new recursion guard.
 ---@param name string? A name for this recursion guard, used only for debugging.
----@return any
+---@return LrRecursionGuard # A recursionGuard object.
 local function LrRecursionGuardConstructor(name) end
 
 return LrRecursionGuardConstructor

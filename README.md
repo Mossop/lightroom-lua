@@ -57,6 +57,8 @@ This deletes and rewrites `library/`. Review the diff before committing it.
    - **A "Return values" list**, where each entry becomes its own `---@return`.
    - **Text that starts with `true` or `false`**, which becomes `boolean`.
    - **`An iterator for all Xs`**, which becomes `fun(): number, X | nil`.
+   - **`An X object`**, which becomes `X`, and **text that starts with `table`**, such as `A table with the following information: …`, which becomes `table`.
+   - A return value of `(None)` or `(nil)` means there is no return value, so no `---@return` is written.
    - **Parameter names**: `id` is `string`, and `isSomething` is `boolean`.
    - Anything else becomes `any`. The build logs a "has no known type" warning for it.
 4. **Overrides.** `TYPE_OVERRIDES` fixes up cases the heuristics get wrong. It is keyed by the documented path (`LrHttp.get`) or the generated path (`LrPublishedCollection:getRemoteId`), with `@arg` for parameters.

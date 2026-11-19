@@ -33,7 +33,6 @@ function LrStringUtils.isOnlyAscii(string) end
 
 --- Sorts an array of strings in-place, using the operating system's localized string comparison.
 ---@param strings table An array of strings to sort.
----@return nil # Returns nothing.
 function LrStringUtils.localizedStringSort(strings) end
 
 --- Converts a string to lowercase using the operating system's localized case conversion.

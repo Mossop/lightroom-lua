@@ -18,7 +18,6 @@ function LrApplication.addDevelopPresetForPlugin(plugin, presetName, presetValue
 ---@param functionContext LrFunctionContext The function context that retains the observation.
 ---@param observer table An object that uniquely identifies the observer. The observer will be passed in the callback.
 ---@param callback function The function that will be called when below application events occur. The callback function includes a message parameter (string) that contains additional information about the event. message could be one of the below: out-of-range-min : when a slider value is exceeding the min range out-of-range-max : when a slider value is exceeding the max range modal : when a modal dialog is launched by the application crop-bounds-limit : when the crop bound limits are exceeded crop-overlay-begin, crop-overlay-end : when crop overlay order is set to the first, or the last context-menu : when a popup menu is shown to user film-strip-begin, film-strip-end : when the film strip scroll position is at the beginning, or at the end hdr-merge-complete, hdr-merge-error : when a HDR merge operation is completed, or failed panorama-merge-complete, panorama-merge-error : when a Panorama merge operation is completed, or failed hdr-panorama-merge-complete, hdr-panorama-merge-error : when a HDR Panorama merge operation is completed, or failed export-complete : when an Export operation is completed
----@return None # This function does not return any value.
 function LrApplication.addHapticObserver(functionContext, observer, callback) end
 
 --- [DEPRECATED] Retrieves a unique identifier that is keyed to Mac App Store receipt.
@@ -65,7 +64,6 @@ function LrApplication.purchaseSource() end
 function LrApplication.serialNumberHash() end
 
 --- Quits the Lightroom Application First supported in version 14.3 of the Lightroom SDK.
----@return None # This function does not return any value.
 function LrApplication.shutdown() end
 
 --- Retrieves the current version of the application as a user-displayable string (for instance, "2.0").

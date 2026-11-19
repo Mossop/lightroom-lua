@@ -66,7 +66,7 @@ function LrDialogs.showError(errorString) end
 
 --- Shows a modal progress dialog.
 ---@param params table Arguments in named-argument syntax: title: (string) Title of the dialog, representing the entire task. Cannot be changed once the operation begins. caption: (optional, string) Subtitle, representing a subtask. Can be changed while the operation is in progress. width: (optional, number) Width of the progress bar, in pixels. cannotCancel: (optional, Boolean) If true, the cancel button is dimmed. functionContext: (LrFunctionContext) A function context to attach to this progress dialog. The progress dialog is terminated when the function scope completes.
----@return any
+---@return LrProgressScope # An LrProgressScope object. Use this object to signal the portion complete.
 function LrDialogs.showModalProgressDialog(params) end
 
 --- Dismisses a modal dialog that is currently displayed.

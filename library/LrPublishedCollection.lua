@@ -24,7 +24,7 @@ function LrPublishedCollection:addPublishedPhotos(publishedPhotos) end
 function LrPublishedCollection:delete() end
 
 --- Retrieves an information summary about this published collection.
----@return any
+---@return table # table with the following information: name: Name of the published collection localIdentifier: Internal ID number of the collection (the local identifier). remoteId: The ID of the collection on the remote service. remoteUrl: URL of the collection (if applicable) as published. isDefaultCollection: (Boolean) True if this is the default collection. parents: (array of tables) Information about any published collection sets that contain this collection. An array of tables, each containing name, localCollectionId, remoteCollectionId, and publishedUrl. collectionSettings: (table) Any collection-specific settings that have been stored by the plug-in. publishSettings: (table) Publish settings for this plug-in.
 function LrPublishedCollection:getCollectionInfoSummary() end
 
 --- Retrieves the current name of this collection.
@@ -52,7 +52,7 @@ function LrPublishedCollection:getRemoteId() end
 function LrPublishedCollection:getRemoteUrl() end
 
 --- Retrieves the search description for a smart collection.
----@return any
+---@return table # Table containing the search description.
 function LrPublishedCollection:getSearchDescription() end
 
 --- Retrieves the service that this collection belongs to.

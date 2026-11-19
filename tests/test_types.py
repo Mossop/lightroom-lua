@@ -218,9 +218,28 @@ class TestParseTypeFromStr:
     def test_iterators(self, text, expected):
         assert parse_type_from_str(text) == (expected, None, None)
 
+    @pytest.mark.parametrize("text,expected", [
+        ("An LrColor object", "LrColor"),
+        ("A recursionGuard object.", "LrRecursionGuard"),
+        ("An exportSession object.", "LrExportSession"),
+        ("An LrProgressScope object. Use this object to make function calls.", "LrProgressScope"),
+    ])
+    def test_object_prose(self, text, expected):
+        assert parse_type_from_str(text) == (expected, None, text)
+
+    @pytest.mark.parametrize("text", [
+        "Table containing the search description.",
+        "A table with the following information: name: Name of the published collection set.",
+        "table with the following information: name: Name of the published collection",
+    ])
+    def test_table_prose(self, text):
+        assert parse_type_from_str(text) == ("table", None, text)
+
     @pytest.mark.parametrize("text", [
         "",
         "Data to be printed, of any type; tostring() is called on all values.",
+        "Tables are not supported.",
+        "An objection.",
         "The name of the resource.",
     ])
     def test_unrecognised_text(self, text):

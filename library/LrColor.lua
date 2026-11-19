@@ -25,7 +25,7 @@ function LrColor:type() end
 
 --- Creates an LrColor object.
 ---@param ... any
----@return any
+---@return LrColor # An LrColor object
 local function LrColorConstructor(...) end
 
 return LrColorConstructor

@@ -36,7 +36,6 @@ TYPE_OVERRIDES = {
     "LrPlugin.id": "string",
     "LrPlugin.path": "string",
     "LrPlugin.enabled": "boolean",
-    "LrProgressScopeConstructor": "LrProgressScope",
     "LrExportContext.exportSession": "LrExportSession",
     "LrPublishedCollection:getRemoteId": "string | number | nil",
     "LrPublishedCollection:getRemoteUrl": "string | nil",
@@ -145,6 +144,15 @@ def parse_type_from_str(st, is_return = False):
     match = re.search(r"""^an iterator for all (.+?)s?(\.|$)""", st, re.IGNORECASE)
     if match:
         return ("fun(): number, %s | nil" % fix_type(match.group(1)), None, None)
+
+    # "An LrColor object", "A recursionGuard object."
+    match = re.search(r"""^an? (\S+) object\b""", st, re.IGNORECASE)
+    if match:
+        return (fix_type(match.group(1)), None, fix_comment(st))
+
+    # "Table containing the search description.", "A table with the following information: …"
+    if re.search(r"""^(an? )?table\b""", st, re.IGNORECASE):
+        return ("table", None, fix_comment(st))
 
     return (None, None, None)
 
@@ -372,6 +380,9 @@ class Function(Item):
 
     def parse_return(self, text):
         (return_type, _, comment) = parse_type_from_str(text, is_return = True)
+        # "(None) This function does not return any value.", "(nil) Returns nothing."
+        if return_type in ("None", "nil"):
+            return
         if return_type is None:
             warn_missing_type(self)
             return_type = "any"
