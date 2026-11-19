@@ -53,6 +53,10 @@ class TestFixType:
         ("exportSession", "LrExportSession"),
         ("LOC", "LrLocalization.LOC"),
         ("export rendition", "LrExportRendition"),
+        ("digester", "LrDigester"),
+        ("Factory", "LrDigestFactory"),
+        ("socket", "LrSocket"),
+        ("viewFactory", "LrViewFactory"),
     ])
     def test_informal_class_names_are_mapped(self, text, expected):
         assert fix_type(text) == expected

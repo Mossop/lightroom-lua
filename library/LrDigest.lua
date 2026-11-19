@@ -1,7 +1,17 @@
 ---@meta
 
----@class Factory
-local Factory = {}
+---@class LrDigest
+local LrDigest = {}
+LrDigest.HMAC = {}
+
+--- Construct a HMAC digest
+---@param digest_name string one of the digests support in this namespace: "SHA256" or "SHA512"
+---@param key string the key for HMAC
+---@return LrDigester? # The new digester, or nil if params are invalid
+function LrDigest.HMAC.init(digest_name, key) end
+
+---@class LrDigestFactory
+local LrDigestFactory = {}
 
 --- Quick digest a string
 ---@param input string Add the input string to the ongoing digest
@@ -9,34 +19,25 @@ local Factory = {}
 ---@param key string the key for HMAC. Only used for HMAC.
 ---@return string # The digest, as a hex string
 ---@return string # The digest, as a binary data string.
-function Factory.digest(input, digest_name, key) end
+function LrDigestFactory.digest(input, digest_name, key) end
 
 --- Create a new digester instance
----@return digester # The new digester
-function Factory.init() end
+---@return LrDigester # The new digester
+function LrDigestFactory.init() end
 
----@class LrDigest
-local LrDigest = {}
-
---- Construct a HMAC digest
----@param digest_name string one of the digests support in this namespace: "SHA256" or "SHA512"
----@param key string the key for HMAC
----@return digester? # The new digester, or nil if params are invalid
-function LrDigest.HMAC.init(digest_name, key) end
-
----@class digester
-local digester = {}
+---@class LrDigester
+local LrDigester = {}
 
 --- Compute the current digest for the digester
 ---@return string # The digest, as a hex string
 ---@return string # The digest, as a binary data string
-function digester:digest() end
+function LrDigester:digest() end
 
 --- Clear a digester making ready for reuse
-function digester:reset() end
+function LrDigester:reset() end
 
 --- Add new data to a digester
 ---@param str string Add the input string to the ongoing digest
-function digester:update(str) end
+function LrDigester:update(str) end
 
-return Factory
+return LrDigest

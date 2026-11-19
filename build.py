@@ -24,6 +24,10 @@ TYPE_MAP = {
     "progressScope": "LrProgressScope",
     "recursionGuard": "LrRecursionGuard",
     "exportSession": "LrExportSession",
+    "digester": "LrDigester",
+    "Factory": "LrDigestFactory",
+    "socket": "LrSocket",
+    "viewFactory": "LrViewFactory",
     "LOC": "LrLocalization.LOC",
     "export rendition": "LrExportRendition",
 }
@@ -253,6 +257,17 @@ class Base:
 
             file.write("local %s = {}\n" % self.final_path())
 
+            # Tables that functions are nested in, like the HMAC in LrDigest.HMAC.init.
+            nested = []
+            for func in self.functions.values():
+                parts = func.name.split(".")[:-1] if func.name is not None else []
+                for i in range(len(parts)):
+                    path = ".".join(parts[:i + 1])
+                    if path not in nested:
+                        nested.append(path)
+            for path in nested:
+                file.write("%s.%s = {}\n" % (self.final_path(), path))
+
             for func in self.functions.values():
                 file.write("\n")
                 func.write(file)
@@ -478,7 +493,11 @@ def parse_module(namespace, html):
     soup = BeautifulSoup(html, "html5lib")
 
     for property_name in find_by_class(soup, "property_name"):
-        prop = Property(namespace, text_content(property_name))
+        name = text_content(property_name)
+        # A namespace constant, like LrView's kIgnoredView, is documented without its namespace.
+        if not re.search(r"[:\.]", name):
+            name = "%s.%s" % (namespace, name)
+        prop = Property(namespace, name)
         property_value = next_element(property_name)
         if property_value is not None and "property_summary" in property_value["class"]:
             prop.parse_type(property_value)
@@ -541,6 +560,11 @@ def generate_module(namespace, html):
     for base in bases:
         base.write(file)
 
+    # The module returns its namespace, or failing that the first base that isn't a class.
+    for base in bases:
+        if not base.is_class() and base.name == namespace:
+            return_name = base.final_path()
+    for base in bases:
         if not base.is_class() and return_name is None:
             return_name = base.final_path()
 

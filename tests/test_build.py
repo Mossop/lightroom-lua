@@ -94,6 +94,11 @@ class TestRealSdk:
         # Informal instance names in the docs.
         ("LrXml", "---@class XmlBuilderInstance"),
         ("LrXml", "---@class XmlDomInstance"),
+        # A namespace constant documented without its namespace.
+        ("LrView", "---@field kIgnoredView any"),
+        # The module returns its namespace even when another table sorts first.
+        ("LrDigest", "return LrDigest"),
+        ("LrDigest", "LrDigest.HMAC = {}"),
         # A "Return values" list.
         ("LrHttp", "---@return string # The body of the HTTP response."),
         ("LrExportRendition", "---@return boolean # True if rendering was successful."),

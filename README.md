@@ -46,13 +46,16 @@ This deletes and rewrites `library/`. Review the diff before committing it.
    - A base that consists only of one call with no prefix, like `LrColor( … )`, is a constructor. It is written as `local function LrColorConstructor`.
    - If a namespace and an instance class would get the same name, the namespace gets a `Namespace` suffix, as in `LrFunctionContextNamespace`.
    - When a page has only one base, that base takes the module's name. That is why `plugin:hasResource` becomes `LrPlugin:hasResource`.
+   - A property documented without a prefix, like `kIgnoredView`, is a field of the module's namespace.
+   - A function nested in a table, like `LrDigest.HMAC.init`, also declares the table (`LrDigest.HMAC = {}`).
+   - The module returns the base named after the module. If there isn't one, it returns the first base that isn't a class.
 3. **Inferring types.** The docs are written for people, so types are inferred from prose:
    - **A leading parenthesised type.** `(optional, string) The title.` becomes `string?`. Nested parentheses are balanced, so a callback signature such as `( function( observer ) )` becomes `function`, and other asides inside the type are dropped. `fix_type` then normalises what is inside the parentheses:
      - `optional` anywhere marks the type as optional.
      - `a or b` becomes `(a | b)`.
      - `array of X` and `table of X` become `X[]`.
      - Comma lists, such as `string, function, or table`, become unions. In a return value without an "or", such as `(Boolean, string)`, they become multiple return values.
-     - `TYPE_MAP` translates informal names: `Boolean` → `boolean`, `_PLUGIN` → `LrPlugin`, `builderInstance` → `XmlBuilderInstance`, `export rendition` → `LrExportRendition`, and so on.
+     - `TYPE_MAP` translates informal names: `Boolean` → `boolean`, `_PLUGIN` → `LrPlugin`, `builderInstance` → `XmlBuilderInstance`, `digester` → `LrDigester`, `export rendition` → `LrExportRendition`, and so on.
    - **A named return value**, such as `success (Boolean) …`.
    - **A "Return values" list**, where each entry becomes its own `---@return`.
    - **Text that starts with `true` or `false`**, which becomes `boolean`.

@@ -374,6 +374,58 @@ class TestOverrides:
         assert "---@field path string" in lua
 
 
+def test_unprefixed_property_belongs_to_the_namespace():
+    # Like LrView's kIgnoredView.
+    html = module_html(
+        functions=[function("LrView.bind"), function("viewFactory:row")],
+        properties=[prop("kIgnoredView", "(table) A constant.")],
+    )
+
+    lua = lines(generate_module("LrView", html))
+    assert lua[lua.index("---@class LrView") + 1] == "---@field kIgnoredView table A constant."
+    assert "---@class kIgnoredView" not in lua
+
+
+def test_module_returns_its_namespace_before_other_tables():
+    # Like LrDigest, where "Factory" sorts before "LrDigest".
+    html = module_html(functions=[
+        function("Factory.init"),
+        function("LrDigest.HMAC.init"),
+        function("digester:reset"),
+    ])
+
+    assert generate_module("LrDigest", html).endswith("\nreturn LrDigest\n")
+
+
+def test_nested_tables_are_declared():
+    html = module_html(functions=[
+        function("LrFoo.A.B.one"),
+        function("LrFoo.A.two"),
+        function("LrFoo.three"),
+    ])
+
+    lua = lines(generate_module("LrFoo", html))
+    i = lua.index("local LrFoo = {}")
+    assert lua[i + 1:i + 3] == ["LrFoo.A = {}", "LrFoo.A.B = {}"]
+    assert "function LrFoo.A.B.one() end" in lua
+
+
+@pytest.mark.parametrize("module,instance,expected", [
+    ("LrDigest", "digester", "LrDigester"),
+    ("LrView", "viewFactory", "LrViewFactory"),
+])
+def test_lowercase_instance_classes_are_renamed(module, instance, expected):
+    html = module_html(functions=[
+        function("%s.make" % module, returns="(%s) The instance." % instance),
+        function("%s:reset" % instance),
+    ])
+
+    lua = lines(generate_module(module, html))
+    assert "---@class %s" % expected in lua
+    assert "function %s:reset() end" % expected in lua
+    assert "---@return %s # The instance." % expected in lua
+
+
 def test_modules_do_not_leak_into_each_other():
     generate_module("LrFoo", module_html(functions=[function("LrFoo.bar")]))
     lua = generate_module("LrBaz", module_html(functions=[function("LrBaz.qux")]))
