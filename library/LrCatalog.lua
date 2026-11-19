@@ -28,6 +28,15 @@ function LrCatalog:addPhoto(path, stackWithPhoto, position, metadataPresetUUID, 
 ---@param updateAISettings boolean? Specifies if AI Settings should be auto updated after applying the preset. Default is false.
 function LrCatalog:applyDevelopPreset(photos, preset, plugin, presetAmount, updateAISettings) end
 
+--- Applies develop settings to the given photos.
+---@param photos LrPhoto[] Target photos. Video entries are skipped. When AI updates are requested, photos whose original and DNG proxy are unavailable are also skipped and reported in a dialog; a batch may therefore apply only partially.
+---@param settings table Develop settings to apply. Without AI updates: If optUpdateAISettings is false or omitted, each setting you provide replaces its current value. If you provide mask groups, they replace all current mask groups. IDs and AI data are copied as-is: Lightroom does not change the IDs or recalculate AI results. In this mode, each photo is updated using LrPhoto:applyDevelopSettings, which also works when the original file is offline. Lightroom copies the settings table, including nested values, when you call the method. Later changes to your table do not affect the queued settings. These changes normally take effect when the write-access block ends, or before a later call with AI updates enabled. Read the updated settings after the block ends or the AI-enabled call returns. If Lightroom rejects a queued change, the write-access operation fails with an error. For example, another AI operation may be pending or running for the photo. With AI updates: If optUpdateAISettings is true, Lightroom applies earlier queued changes first, then applies this call's settings and waits for any AI processing to finish before returning. You can read the results without waiting for the write-access block to end. Individual settings, such as Exposure, replace their current values. Other groups of settings are combined by matching their IDs. Supplied mask groups replace all current mask groups. Undo: One write-access block can create several Undo steps. User edits made while the plug-in waits keep their normal place in the Undo history.
+---@param optHistoryName string? Custom Develop history step name for each photo. If nil or omitted, the name is generated from each photo's settings changes.
+---@param optFlattenAutoNow boolean? True to resolve Auto settings when settings are applied. Default is false. With AI updates disabled, unavailable image data leaves Auto Tone unresolved.
+---@param optUpdateAISettings boolean? True to recalculate AI edits, if needed, using each photo's current settings combined with the supplied settings. The settings and their AI updates share one Develop history step per photo. Default is false.
+---@param optProgressScopeName string? Name shown in the progress bar. Defaults to "Apply Develop Settings".
+function LrCatalog:applyDevelopSettings(photos, settings, optHistoryName, optFlattenAutoNow, optUpdateAISettings, optProgressScopeName) end
+
 --- If this catalog has at least private write access, the function returns.
 ---@param funcName string Name of a function whose value appears in the error message, if any.
 function LrCatalog:assertHasPrivateWriteAccess(funcName) end
@@ -59,6 +68,12 @@ function LrCatalog:batchGetRawMetadata(photos, keys) end
 ---@param photos LrPhoto[] The photos for which to build smart previews.
 ---@return arrays[] # A table with sub-arrays indicating the result of the smart preview build attempt. The sub-arrays are 'created', 'existed', and 'failed', and they contain LrPhoto objects corresponding to the photos for which the indicated status is appropriate.
 function LrCatalog:buildSmartPreviews(photos) end
+
+--- Copy settings of the photo that is active within the current selection.
+---@param optPreset string? One of the Copy/Sync Settings dialog's own subset presets: "all" (every group), "default" (every group's factory-default state, ignoring any saved "last used" choice), or "modified" (only the groups where this photo's current settings differ from its own factory defaults). Any other string is looked up as the name of a subset saved via that dialog's "Save..." item; an error is raised if no such subset exists. The names "all", "default", "modified", and "custom" are reserved for these built-in modes, so a subset saved under one of those exact names cannot be selected through this parameter. Defaults to (and may be explicitly passed as) "custom", meaning use optSettingsGroups if given, or otherwise copy the same settings chosen the last time the "Copy Settings" dialog was used.
+---@param optSettingsGroups table? Table of develop-setting group names to copy, for example { basic = true, cropTool = true }. See LrDevelopSettingsGroups for the full list of valid keys. Only valid when optPreset is "custom" (its default) or omitted; when both this and a non-"custom" optPreset are given, an error is raised.
+---@return boolean # True if copy settings was successful.
+function LrCatalog:copySettingsOfActiveSelection(optPreset, optSettingsGroups) end
 
 --- Creates a new collection in this catalog.
 ---@param name string The name of the new collection.
@@ -208,8 +223,13 @@ function LrCatalog:getTargetPhotos() end
 --- Paste settings from the clipboard to the given photos.
 ---@param photos LrPhoto[] The photos to which to paste settings.
 ---@param updateAISettings boolean? Specifies if AI Settings should be auto updated after applying. Default is false.
+---@param replaceMasks boolean? If the copied settings contain masks, specifies whether to merge them with each photo's own masks (matching masks replaced in place, others left alone) or replace all of that photo's masks outright. Default is false (merge).
 ---@return boolean # True if paste settings was executed for at least one photo.
-function LrCatalog:pasteSettings(photos, updateAISettings) end
+function LrCatalog:pasteSettings(photos, updateAISettings, replaceMasks) end
+
+--- Turns develop history recording on or off for this catalog, the same as the history recording option in Catalog Settings.
+---@param active boolean? Pass false to suspend history recording. Any other value, including nil, enables it.
+function LrCatalog:recordDevelopHistory(active) end
 
 --- Sets the sources from which the grid photos are currently drawn.
 ---@param sources (string | array) Can be an array of objects, or a string that identifies a predefined set of photos. If an array, it can contain any mix of LrCollection, LrCollectionSet, LrPublishedCollection and LrPublishedCollectionSet, or it can contain one or more LrFolder objects. Do not mix collections with folders. If a string, it must be one of the string constants defined in these LrCatalog properties: kAllPhotos kQuickCollectionIdentifier kPreviousImport kTemporaryImages kLastCatalogExport kTargetCollection

@@ -21,10 +21,12 @@ function LrPhoto:addOrRemoveFromTargetCollection(include_selected) end
 function LrPhoto:applyDevelopPreset(preset, plugin, presetAmount, updateAISettings) end
 
 --- apply develop settings to an image.
----@param settings table table of settings to be applied.
----@param optHistoryName string? name of the history step.
----@param optFlattenAutoNow boolean? True to resolve Auto settings synchronously within the context of this API call.
-function LrPhoto:applyDevelopSettings(settings, optHistoryName, optFlattenAutoNow) end
+---@param settings table Develop settings to apply. Without AI updates: If optUpdateAISettings is false or omitted, each setting you provide replaces its current value. If you provide mask groups, they replace all current mask groups. IDs and AI data are copied as-is: Lightroom does not change the IDs or recalculate AI results. This mode also works when the original file is offline. Lightroom copies the settings table, including nested values, when you call the method. Later changes to your table do not affect the queued settings. These changes normally take effect when the write-access block ends, or before a later call with AI updates enabled. Read the updated settings after the block ends or the AI-enabled call returns. If Lightroom rejects a queued change, the write-access operation fails with an error. For example, another AI operation may be pending or running for the photo. With AI updates: If optUpdateAISettings is true, Lightroom applies earlier queued changes first, then applies this call's settings and waits for any AI processing to finish before returning. You can read the results without waiting for the write-access block to end. Individual settings, such as Exposure, replace their current values. Other groups of settings are combined by matching their IDs. Supplied mask groups replace all current mask groups. Undo: One write-access block can create several Undo steps. User edits made while the plug-in waits keep their normal place in the Undo history.
+---@param optHistoryName string? Custom Develop history step name. If nil or omitted, the name is generated from the photo's settings changes.
+---@param optFlattenAutoNow boolean? True to resolve Auto Tone to fixed values when settings are applied; false leaves Auto Tone active. Default is false. With AI updates disabled, unavailable image data leaves Auto Tone unresolved.
+---@param optUpdateAISettings boolean? True to recalculate AI edits, if needed, using the photo's current settings combined with the supplied settings. The settings and their AI updates share one Develop history step. Default is false.
+---@param optProgressScopeName string? Name shown in the progress bar. Defaults to "Apply Develop Settings".
+function LrPhoto:applyDevelopSettings(settings, optHistoryName, optFlattenAutoNow, optUpdateAISettings, optProgressScopeName) end
 
 --- Applies a snapshot to the photo.
 ---@param id string ID of the snapshot to be applied.
@@ -43,8 +45,10 @@ function LrPhoto:buildSmartPreview() end
 function LrPhoto:checkPhotoAvailability() end
 
 --- Copy settings of an image which are already selected in the UI.
+---@param optPreset string? One of the Copy/Sync Settings dialog's own subset presets: "all" (every group), "default" (every group's factory-default state, ignoring any saved "last used" choice), or "modified" (only the groups where this photo's current settings differ from its own factory defaults). Any other string is looked up as the name of a subset saved via that dialog's "Save..." item; an error is raised if no such subset exists. The names "all", "default", "modified", and "custom" are reserved for these built-in modes, so a subset saved under one of those exact names cannot be selected through this parameter. Defaults to (and may be explicitly passed as) "custom", meaning use optSettingsGroups if given, or otherwise copy the same settings chosen the last time the "Copy Settings" dialog was used.
+---@param optSettingsGroups table? Table of develop-setting group names to copy, for example { basic = true, cropTool = true }. See LrDevelopSettingsGroups for the full list of valid keys. Only valid when optPreset is "custom" (its default) or omitted; when both this and a non-"custom" optPreset are given, an error is raised.
 ---@return boolean # True if copy settings is successful.
-function LrPhoto:copySettings() end
+function LrPhoto:copySettings(optPreset, optSettingsGroups) end
 
 --- Creates a develop snapshot of this photo.
 ---@param snapshotName string The name of the new snapshot.
@@ -105,7 +109,6 @@ function LrPhoto:getRawMetadata(key) end
 function LrPhoto:isAvailableForEditing() end
 
 --- Checks if AI Settings need to be updated for this photo.
----@return boolean # True if AI settings need to be updated, false otherwise.
 function LrPhoto:needsUpdateAISettings() end
 
 --- Opens export dialog for the current photo.
@@ -116,8 +119,9 @@ function LrPhoto:openExportWithPreviousDialog() end
 
 --- Paste settings to an image.
 ---@param updateAISettings boolean? Specifies if AI Settings should be auto updated after applying the preset. Default is false
+---@param replaceMasks boolean? If the copied settings contain masks, specifies whether to merge them with the photo's own masks (matching masks replaced in place, others left alone) or replace all of the photo's masks outright. Default is false (merge).
 ---@return boolean # True if paste settings is successful.
-function LrPhoto:pasteSettings(updateAISettings) end
+function LrPhoto:pasteSettings(updateAISettings, replaceMasks) end
 
 --- Sets the value of a Develop adjustment for the current photo.
 ---@param settingName string can be "Exposure", "Contrast", "Highlights", "Shadows", "Whites", "Blacks", "Clarity", "Vibrance", "Saturation"
@@ -179,4 +183,5 @@ function LrPhoto:setRawMetadata(key, value) end
 function LrPhoto:type() end
 
 --- Updates AI Settings for this photo.
-function LrPhoto:updateAISettings() end
+---@param updateOne boolean? When true, updates only the topmost AI edit that requires updating. When false or omitted, all AI edits on the photo are updated. First supported in version 15.4 of the Lightroom Classic SDK.
+function LrPhoto:updateAISettings(updateOne) end

@@ -21,8 +21,8 @@ function LrApplication.addDevelopPresetForPlugin(plugin, presetName, presetValue
 ---@return None # This function does not return any value.
 function LrApplication.addHapticObserver(functionContext, observer, callback) end
 
---- Retrieves a unique identifier that is keyed to Mac App Store receipt.
----@return string # The unique ID, or nil if the running version of Lightroom is not from the Mac App Store.
+--- [DEPRECATED] Retrieves a unique identifier that is keyed to Mac App Store receipt.
+---@return string # The unique ID, or nil if the running version of Lightroom is not from the Mac App Store. As of version 15.4 this API will always return "nil".
 function LrApplication.appStoreReceiptHash() end
 
 --- Requests a catalog backup to be performed next time Lightroom closes.
@@ -56,12 +56,12 @@ function LrApplication.macAddressHash() end
 ---@return table # A table describing each of the available metadata presets, or an empty table if no presets exist. key: The preset name. value: The UUID or path to the preset's definition.
 function LrApplication.metadataPresets() end
 
---- Returns a string identifying the manner in which the Lightroom instance was obtained.
----@return string # 'retail', or 'MAS' if the running version of Lightroom was purchased from the Mac App Store. As of Lightroom 5.6, if the running version of Lightroom was installed from the Adobe Creative Cloud, the string 'CC' will be returned.
+--- [DEPRECATED] Returns a string identifying the manner in which the Lightroom instance was obtained.
+---@return string # 'retail', or 'MAS' if the running version of Lightroom was purchased from the Mac App Store. As of Lightroom 5.6, if the running version of Lightroom was installed from the Adobe Creative Cloud, the string 'CC' will be returned. As of version 15.4 this API will always return "DEPRECATED"
 function LrApplication.purchaseSource() end
 
---- Retrieves a unique identifier that is keyed to the Lightroom serial number.
----@return string # The unique ID, or "trial" if no serial number is installed (as in 30-day trial mode). As of Lightroom 4.1, if the running version of Lightroom is from the Mac App Store, an empty string will be returned. As of Lightroom 5.6, if the running version of Lightroom was installed from the Adobe Creative Cloud, an empty string will be returned.
+--- [DEPRECATED] Retrieves a unique identifier that is keyed to the Lightroom serial number.
+---@return string # The unique ID, or "trial" if no serial number is installed (as in 30-day trial mode). As of Lightroom 4.1, if the running version of Lightroom is from the Mac App Store, an empty string will be returned. As of Lightroom 5.6, if the running version of Lightroom was installed from the Adobe Creative Cloud, an empty string will be returned. As of version 15.4 this API will always return "DEPRECATED".
 function LrApplication.serialNumberHash() end
 
 --- Quits the Lightroom Application First supported in version 14.3 of the Lightroom SDK.
