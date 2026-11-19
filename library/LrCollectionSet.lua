@@ -17,7 +17,7 @@ function LrCollectionSet:getChildCollectionSets() end
 function LrCollectionSet:getChildCollections() end
 
 --- Retrieves all immediate members of this set, both collections and collection sets.
----@return LrCollection and LrCollectionSet[] # The collection and set objects.
+---@return (LrCollection | LrCollectionSet)[] # The collection and set objects.
 function LrCollectionSet:getChildren() end
 
 --- Retrieves the current name of this set.

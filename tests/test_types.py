@@ -7,7 +7,7 @@ produce. They are strict, so fixing one makes the test fail until its marker is 
 
 import pytest
 
-from build import fix_type, parse_type_from_str
+from build import fix_type, parse_type_from_str, singular
 
 
 def known_bug(reason):
@@ -111,16 +111,13 @@ class TestFixType:
     def test_optional_array(self):
         assert fix_type("optional, array of LrPhoto") == "LrPhoto[]?"
 
-    @known_bug("plural is mapped to string[] by TYPE_MAP before the trailing 's' is stripped")
     def test_array_of_plural_mapped_type(self):
         # LrCatalog:batchGetRawMetadata's keys parameter.
         assert fix_type("array of strings") == "string[]"
 
-    @known_bug("'and' is not treated as a union")
     def test_and_union(self):
         assert fix_type("LrCollection and LrCollectionSet") == "(LrCollection | LrCollectionSet)"
 
-    @known_bug("'and' is not treated as a union")
     def test_array_of_and_union(self):
         assert fix_type("array of LrCollection and LrCollectionSet") == "(LrCollection | LrCollectionSet)[]"
 
@@ -144,23 +141,45 @@ class TestFixType:
     def test_comma_separated_union_in_return_value(self):
         assert fix_type("string, function, or table", is_return=True) == "(string | function | table)"
 
-    @known_bug("'arrays' is not a type, so this produces 'arrays[]'")
     def test_table_of_arrays(self):
         # LrCatalog:buildSmartPreviews returns sub-arrays keyed 'created', 'existed' and 'failed'.
         assert fix_type("table of arrays") == "table<string, any[]>"
 
-    @known_bug("'one or more' is parsed as a union with the type 'one'")
     def test_one_or_more(self):
         # LrLogger:enable's varargs.
         assert fix_type("one or more strings") == "string"
 
-    @known_bug("'any type' is not recognised")
+    def test_one_or_more_return_values(self):
+        # LrLogger:quick's return values.
+        assert fix_type("one or more functions", is_return=True) == "function ..."
+
     def test_any_type(self):
         assert fix_type("any type") == "any"
 
-    @known_bug("a bare 'array' is not a Lua type")
     def test_bare_array(self):
         assert fix_type("string or array") == "(string | any[])"
+
+    @pytest.mark.parametrize("text", [
+        # ftpConnection:pRemoveFile's second return value.
+        "string/Boolean",
+        "string / Boolean",
+    ])
+    def test_slash_union(self, text):
+        assert fix_type(text) == "(string | boolean)"
+
+    def test_value_followed_by_varargs(self):
+        # LrTasks.pcall's return value.
+        assert fix_type("Boolean + ...", is_return=True) == "boolean, any ..."
+
+    @pytest.mark.parametrize("text,expected", [
+        ("strings", "string"),
+        ("LrPublishedCollections", "LrPublishedCollection"),
+        ("LrPhoto", "LrPhoto"),
+        ("s", "s"),
+        ("export renditions", "export renditions"),
+    ])
+    def test_singular(self, text, expected):
+        assert singular(text) == expected
 
     def test_list_without_spaces(self):
         assert fix_type("string,bool") == fix_type("string, bool")

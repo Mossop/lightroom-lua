@@ -15,7 +15,7 @@ function LrTasks.execute(cmd) end
 --- Simulates Lua's standard pcall(), but in a way that allows a call to LrTasks.yield() to occur inside it.
 ---@param func function The function to call
 ---@param ... any
----@return Boolean + ... # Success (true) or failure (false) + the return value from the function (same as Lua's pcall()).
+---@return boolean, any ... # Success (true) or failure (false) + the return value from the function (same as Lua's pcall()).
 function LrTasks.pcall(func, ...) end
 
 --- Temporarily stops this task and allows other tasks on Lightroom's main user interface thread to proceed.

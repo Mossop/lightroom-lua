@@ -10,7 +10,7 @@ local LrView = {}
 function LrView.bind(binding) end
 
 --- This namespace function allows you to define a view that is added to the layout only if a specific condition is true.
----@param condition any type If not nil or false, the view is included in the layout.
+---@param condition any If not nil or false, the view is included in the layout.
 ---@param view view description The view to include if condition is true.
 ---@return any
 function LrView.conditionalItem(condition, view) end

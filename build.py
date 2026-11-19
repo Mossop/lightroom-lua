@@ -30,6 +30,9 @@ TYPE_MAP = {
     "viewFactory": "LrViewFactory",
     "LOC": "LrLocalization.LOC",
     "export rendition": "LrExportRendition",
+    "any type": "any",
+    "array": "any[]",
+    "table of arrays": "table<string, any[]>",
 }
 
 TYPE_OVERRIDES = {
@@ -52,6 +55,12 @@ def strip_tags(st):
 def fix_comment(comment):
     return comment.strip()
 
+def singular(st):
+    """Turns a plural type name, like "strings" or "LrPhotos", into the singular."""
+    if len(st) > 1 and st.endswith("s") and not re.search(r"\s", st):
+        return st[0:-1]
+    return st
+
 def fix_type(st, is_return = False):
     """Converts a type written in the docs to a LuaLS type.
 
@@ -62,6 +71,18 @@ def fix_type(st, is_return = False):
     if "optional" in st:
         return fix_type(st.replace("optional", "").strip(" ,")) + "?"
 
+    if st in TYPE_MAP:
+        return TYPE_MAP[st]
+
+    # "Boolean + ...", a value followed by any number of others, as in LrTasks.pcall.
+    match = re.search(r"^(.+?)\s*\+\s*\.\.\.$", st)
+    if match:
+        return "%s, any ..." % fix_type(match.group(1))
+
+    # "string/Boolean"
+    if "/" in st:
+        return fix_type(st.replace("/", " or "), is_return)
+
     if "," in st:
         parts = [re.sub(r"^or ", "", s.strip()) for s in st.split(",")]
         parts = [s for s in parts if s != ""]
@@ -70,20 +91,18 @@ def fix_type(st, is_return = False):
             return ", ".join(types)
         return "(" + " | ".join(types) + ")"
 
-    if st.startswith("array of "):
-        inner = fix_type(st[9:])
-        if inner.endswith("s"):
-            inner = inner[0:-1]
-        return inner + "[]"
+    # "one or more strings", for varargs. As a return type, it is any number of return values.
+    if st.startswith("one or more "):
+        inner = fix_type(singular(st[12:]))
+        return "%s ..." % inner if is_return else inner
 
-    if " or " in st:
-        return "(" + " | ".join([fix_type(s) for s in st.split(" or ")]) + ")"
+    match = re.search(r"^(array|table) of (.+)$", st)
+    if match:
+        return fix_type(singular(match.group(2))) + "[]"
 
-    if st.startswith("table of "):
-        return fix_type(st[9:]) + "[]"
-
-    if st in TYPE_MAP:
-        return TYPE_MAP[st]
+    for separator in (" or ", " and "):
+        if separator in st:
+            return "(" + " | ".join([fix_type(s.strip()) for s in st.split(separator)]) + ")"
 
     return st
 

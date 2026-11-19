@@ -52,8 +52,10 @@ This deletes and rewrites `library/`. Review the diff before committing it.
 3. **Inferring types.** The docs are written for people, so types are inferred from prose:
    - **A leading parenthesised type.** `(optional, string) The title.` becomes `string?`. Nested parentheses are balanced, so a callback signature such as `( function( observer ) )` becomes `function`, and other asides inside the type are dropped. `fix_type` then normalises what is inside the parentheses:
      - `optional` anywhere marks the type as optional.
-     - `a or b` becomes `(a | b)`.
-     - `array of X` and `table of X` become `X[]`.
+     - `a or b`, `a and b` and `a/b` become `(a | b)`.
+     - `array of X` and `table of X` become `X[]`, and a plural `X` is made singular.
+     - `one or more Xs` becomes `X`, or `X ...` (any number of values) as a return type.
+     - `X + ...` becomes `X, any ...`.
      - Comma lists, such as `string, function, or table`, become unions. In a return value without an "or", such as `(Boolean, string)`, they become multiple return values.
      - `TYPE_MAP` translates informal names: `Boolean` → `boolean`, `_PLUGIN` → `LrPlugin`, `builderInstance` → `XmlBuilderInstance`, `digester` → `LrDigester`, `export rendition` → `LrExportRendition`, and so on.
    - **A named return value**, such as `success (Boolean) …`.
@@ -87,19 +89,12 @@ Known bugs are recorded as strict `xfail` tests whose assertion is the *correct*
 
 ## Known issues
 
-These are the cases where the generator currently produces wrong or unhelpful types. Each one, except the last two, has an `xfail` test.
+These are the cases where the generator currently produces wrong or unhelpful types. Each one, except the last, has an `xfail` test.
 
 | Doc text | Generated | Should be |
 | --- | --- | --- |
-| `(array of strings)` | `string[][]` | `string[]` |
-| `(LrCollection and LrCollectionSet)` | left as-is | `(LrCollection \| LrCollectionSet)` |
-| `(one or more strings)` | `(one \| more strings)` | `string` |
-| `(any type)` | `any type` | `any` |
-| `(string or array)` | `(string \| array)` | `(string \| any[])` |
-| `(table of arrays)` | `arrays[]` | `table<string, any[]>` |
 | A return value of just `true` | not recognised | `boolean` (the `$` in the regex character class is literal) |
 | A function with no `function_summary` | takes the next element's text as its comment | no comment. The current SDK does not hit this |
-| `(Boolean + ...)` (`LrTasks.pcall`) | `Boolean + ...` | `boolean` followed by varargs. **No test yet** |
 | `(view description)` (`LrView.conditionalItem`) | `view description` | probably `table`. **No test yet** |
 
 Many properties are only described in prose, such as "Reports whether the plug-in is enabled.", so they are typed `any` unless they have an override.

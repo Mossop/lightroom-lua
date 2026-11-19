@@ -71,7 +71,7 @@ function LrFtpConnection:pRemoveDirectory(directoryName) end
 --- Removes a file on the remote server.
 ---@param filename string The name of the file to remove.
 ---@return boolean # True if the function completed correctly
----@return string/Boolean # On failure, the error message. On success, true if a check for the file after the operation completed shows it to be deleted.
+---@return (string | boolean) # On failure, the error message. On success, true if a check for the file after the operation completed shows it to be deleted.
 function LrFtpConnection:pRemoveFile(filename) end
 
 --- Sends a file from the local filesystem to the remote server.

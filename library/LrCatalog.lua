@@ -60,13 +60,13 @@ function LrCatalog:batchGetPropertyForPlugin(photos, plugin, fieldIds) end
 
 --- Retrieves unformatted metadata for multiple photos.
 ---@param photos LrPhoto[] The photo objects to inspect.
----@param keys string[][]? The metadata items to retrieve, or nil to get all avaliable metadata fields. See LrPhoto:getRawMetadata for list of valid keys.
+---@param keys string[]? The metadata items to retrieve, or nil to get all avaliable metadata fields. See LrPhoto:getRawMetadata for list of valid keys.
 ---@return table # The result, a table with this structure: result = { [ LrPhoto #1 ] = { fileName = "filename_1.jpg", rating = 3, }, [ LrPhoto #2 ] = { fileName = "filename_2.jpg", rating = 5, }, }
 function LrCatalog:batchGetRawMetadata(photos, keys) end
 
 --- Builds a smart preview for a set of photos.
 ---@param photos LrPhoto[] The photos for which to build smart previews.
----@return arrays[] # A table with sub-arrays indicating the result of the smart preview build attempt. The sub-arrays are 'created', 'existed', and 'failed', and they contain LrPhoto objects corresponding to the photos for which the indicated status is appropriate.
+---@return table<string, any[]> # A table with sub-arrays indicating the result of the smart preview build attempt. The sub-arrays are 'created', 'existed', and 'failed', and they contain LrPhoto objects corresponding to the photos for which the indicated status is appropriate.
 function LrCatalog:buildSmartPreviews(photos) end
 
 --- Copy settings of the photo that is active within the current selection.
@@ -236,7 +236,7 @@ function LrCatalog:pasteSettings(photos, updateAISettings, replaceMasks) end
 function LrCatalog:recordDevelopHistory(active) end
 
 --- Sets the sources from which the grid photos are currently drawn.
----@param sources (string | array) Can be an array of objects, or a string that identifies a predefined set of photos. If an array, it can contain any mix of LrCollection, LrCollectionSet, LrPublishedCollection and LrPublishedCollectionSet, or it can contain one or more LrFolder objects. Do not mix collections with folders. If a string, it must be one of the string constants defined in these LrCatalog properties: kAllPhotos kQuickCollectionIdentifier kPreviousImport kTemporaryImages kLastCatalogExport kTargetCollection
+---@param sources (string | any[]) Can be an array of objects, or a string that identifies a predefined set of photos. If an array, it can contain any mix of LrCollection, LrCollectionSet, LrPublishedCollection and LrPublishedCollectionSet, or it can contain one or more LrFolder objects. Do not mix collections with folders. If a string, it must be one of the string constants defined in these LrCatalog properties: kAllPhotos kQuickCollectionIdentifier kPreviousImport kTemporaryImages kLastCatalogExport kTargetCollection
 ---@return boolean # True on success, false if the sources are not correctly specified.
 function LrCatalog:setActiveSources(sources) end
 

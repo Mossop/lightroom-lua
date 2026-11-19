@@ -47,13 +47,13 @@ function LrLogger:info(...) end
 function LrLogger:infof(format, ...) end
 
 --- Creates optimized versions of specified log functions for use in tight loops.
----@param ... (one | more strings) The names of log functions to optimize.
----@return (one | more functions) # The optimized functions.
+---@param ... string The names of log functions to optimize.
+---@return function ... # The optimized functions.
 function LrLogger:quick(...) end
 
 --- Creates optimized versions of specified log functions for use in tight loops.
----@param ... (one | more strings) The names of log functions to optimize.
----@return (one | more functions) # The optimized functions.
+---@param ... string The names of log functions to optimize.
+---@return function ... # The optimized functions.
 function LrLogger:quickf(...) end
 
 --- Feeds log output through the action function defined for 'trace' messages.

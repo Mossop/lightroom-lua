@@ -17,7 +17,7 @@ function LrPublishedCollectionSet:getChildCollectionSets() end
 function LrPublishedCollectionSet:getChildCollections() end
 
 --- Retrieves all immediate members of this set, both published collections and collection sets.
----@return LrPublishedCollection and LrPublishedCollectionSet[] # The collection and set objects.
+---@return (LrPublishedCollection | LrPublishedCollectionSet)[] # The collection and set objects.
 function LrPublishedCollectionSet:getChildren() end
 
 --- Retrieves an information summary about this published collection set.
