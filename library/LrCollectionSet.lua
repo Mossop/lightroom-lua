@@ -25,7 +25,7 @@ function LrCollectionSet:getChildren() end
 function LrCollectionSet:getName() end
 
 --- Retrieves the parent set, if any of this collection set.
----@return LrCollectionSet # The parent set, or nil.
+---@return LrCollectionSet? # The parent set, or nil.
 function LrCollectionSet:getParent() end
 
 --- Sets a new name for this collection set.
@@ -34,7 +34,7 @@ function LrCollectionSet:getParent() end
 function LrCollectionSet:setName(name) end
 
 --- Sets a new parent for the collection set.
----@param parent LrCollectionSet The new parent set, or nil to make this a top-level collection set.
+---@param parent LrCollectionSet? The new parent set, or nil to make this a top-level collection set.
 function LrCollectionSet:setParent(parent) end
 
 --- Reports the type of this object.

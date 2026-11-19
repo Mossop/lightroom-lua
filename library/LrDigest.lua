@@ -21,7 +21,7 @@ local LrDigest = {}
 --- Construct a HMAC digest
 ---@param digest_name string one of the digests support in this namespace: "SHA256" or "SHA512"
 ---@param key string the key for HMAC
----@return digester # The new digester, or nil if params are invalid
+---@return digester? # The new digester, or nil if params are invalid
 function LrDigest.HMAC.init(digest_name, key) end
 
 ---@class digester

@@ -17,7 +17,7 @@ function LrApplicationView.fullscreenPreview() end
 function LrApplicationView.getCurrentModuleName() end
 
 --- Returns the name of the view currently showing on the secondary screen, or nil of the secondary display is not on.
----@return string # The name of the secondary view being shown, one of: "loupe", "live_loupe", "locked_loupe", "grid", "compare", "survey", "slideshow", or nil.
+---@return string? # The name of the secondary view being shown, one of: "loupe", "live_loupe", "locked_loupe", "grid", "compare", "survey", "slideshow", or nil.
 function LrApplicationView.getSecondaryViewName() end
 
 --- Opens Grid View.

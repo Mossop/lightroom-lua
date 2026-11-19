@@ -22,7 +22,7 @@ function LrKeyword:getChildren() end
 function LrKeyword:getName() end
 
 --- Retrieves the parent of this keyword, if any.
----@return LrKeyword # The parent keyword object, or nil if this is a top-level keyword.
+---@return LrKeyword? # The parent keyword object, or nil if this is a top-level keyword.
 function LrKeyword:getParent() end
 
 --- Retrieves the photos that have this keyword.
@@ -39,5 +39,5 @@ function LrKeyword:getSynonyms() end
 function LrKeyword:setAttributes(keywordInfo) end
 
 --- Sets the parent of this keyword.
----@param parent LrKeyword The new parent of the keyword, or nil to move the keyword to the top level.
+---@param parent LrKeyword? The new parent of the keyword, or nil to move the keyword to the top level.
 function LrKeyword:setParent(parent) end

@@ -12,7 +12,7 @@ function LrFtp.appendFtpPaths(root, child) end
 --- Creates and return an FTP connection object (ftpConnection).
 ---@param params table A table with these fields: passive: (string) The type of passive connection to make: "none", "normal" or "enhanced". password: (string) The password to accompany the username in authentication. path: (string) The remote path to use when sending or receiving files from the server. port: (integer) The network port the server is using to host the FTP service. protocol: (string) The type of FTP connection to use, "ftp" or "sftp". server: (string) The server name or IP address for this FTP connection. username: (string) The username to authenticate the connection.
 ---@param autoNegotiate boolean True to prompt the user for retry if the connection cannot be completed due to an invalid password or an SSH host-key issue.
----@return LrFtpConnection # The new FTP connection object, or nil and an error message if the connection failed.
+---@return LrFtpConnection? # The new FTP connection object, or nil and an error message if the connection failed.
 function LrFtp.create(params, autoNegotiate) end
 
 --- A validator function for use in LrView UI control definitions.

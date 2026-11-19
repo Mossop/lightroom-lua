@@ -21,7 +21,7 @@ function LrApplication.addDevelopPresetForPlugin(plugin, presetName, presetValue
 function LrApplication.addHapticObserver(functionContext, observer, callback) end
 
 --- [DEPRECATED] Retrieves a unique identifier that is keyed to Mac App Store receipt.
----@return string # The unique ID, or nil if the running version of Lightroom is not from the Mac App Store. As of version 15.4 this API will always return "nil".
+---@return string? # The unique ID, or nil if the running version of Lightroom is not from the Mac App Store. As of version 15.4 this API will always return "nil".
 function LrApplication.appStoreReceiptHash() end
 
 --- Requests a catalog backup to be performed next time Lightroom closes.

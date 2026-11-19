@@ -29,7 +29,7 @@ function LrPublishedCollectionSet:getCollectionSetInfoSummary() end
 function LrPublishedCollectionSet:getName() end
 
 --- Retrieves the parent set, if any of this published-collection set.
----@return LrPublishedCollectionSet # The parent set, or nil.
+---@return LrPublishedCollectionSet? # The parent set, or nil.
 function LrPublishedCollectionSet:getParent() end
 
 --- Retrieves the remote service's unique identifier for this published collection set, as previously recorded by the plug-in.
@@ -54,7 +54,7 @@ function LrPublishedCollectionSet:setCollectionSetSettings(settings) end
 function LrPublishedCollectionSet:setName(name) end
 
 --- Sets a new parent for this published collection set.
----@param parent LrPublishedCollectionSet The new parent set in the same LrPublishService, or nil to make this an immediate child of the service that contains it.
+---@param parent LrPublishedCollectionSet? The new parent set in the same LrPublishService, or nil to make this an immediate child of the service that contains it.
 function LrPublishedCollectionSet:setParent(parent) end
 
 --- Sets the unique identifier for this published collection set as understood by the remote service.

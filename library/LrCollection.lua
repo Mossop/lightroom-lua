@@ -17,7 +17,7 @@ function LrCollection:delete() end
 function LrCollection:getName() end
 
 --- Retrieves the parent collection set, if any, that contains this collection.
----@return LrCollectionSet # The parent set object or nil.
+---@return LrCollectionSet? # The parent set object or nil.
 function LrCollection:getParent() end
 
 --- Retrieves all of the photos in this collection.
@@ -45,7 +45,7 @@ function LrCollection:removePhotos(photos) end
 function LrCollection:setName(name) end
 
 --- Sets a new parent for this collection.
----@param parent LrCollectionSet The new parent collection set, or nil to make this a top-level collection.
+---@param parent LrCollectionSet? The new parent collection set, or nil to make this a top-level collection.
 function LrCollection:setParent(parent) end
 
 --- Sets the search description for a smart collection.

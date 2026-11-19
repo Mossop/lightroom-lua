@@ -47,7 +47,7 @@ function LrCatalog:assertHasWriteAccess(funcName) end
 
 --- Retrieves display-formatted metadata for multiple photos.
 ---@param photos LrPhoto[] The photo objects to inspect.
----@param keys string[] The metadata items to retrieve, or nil to get all avaliable metadata fields. See LrPhoto:getFormattedMetadata for list of valid keys.
+---@param keys string[]? The metadata items to retrieve, or nil to get all avaliable metadata fields. See LrPhoto:getFormattedMetadata for list of valid keys.
 ---@return table # The result, a table with this structure: result = { [ LrPhoto #1 ] = { fileName = "filename_1.jpg", rating = 3, }, [ LrPhoto #2 ] = { fileName = "filename_2.jpg", rating = 5, }, }
 function LrCatalog:batchGetFormattedMetadata(photos, keys) end
 
@@ -60,7 +60,7 @@ function LrCatalog:batchGetPropertyForPlugin(photos, plugin, fieldIds) end
 
 --- Retrieves unformatted metadata for multiple photos.
 ---@param photos LrPhoto[] The photo objects to inspect.
----@param keys string[][] The metadata items to retrieve, or nil to get all avaliable metadata fields. See LrPhoto:getRawMetadata for list of valid keys.
+---@param keys string[][]? The metadata items to retrieve, or nil to get all avaliable metadata fields. See LrPhoto:getRawMetadata for list of valid keys.
 ---@return table # The result, a table with this structure: result = { [ LrPhoto #1 ] = { fileName = "filename_1.jpg", rating = 3, }, [ LrPhoto #2 ] = { fileName = "filename_2.jpg", rating = 5, }, }
 function LrCatalog:batchGetRawMetadata(photos, keys) end
 
@@ -93,7 +93,7 @@ function LrCatalog:createCollectionSet(name, parent, canReturnPrior) end
 ---@param keywordName string The name of the keyword.
 ---@param synonyms table The names of synonyms.
 ---@param includeOnExport boolean True to include the keyword when the photo is exported.
----@param parent LrKeyword The parent of the keyword, or nil to create at the top level.
+---@param parent LrKeyword? The parent of the keyword, or nil to create at the top level.
 ---@param returnExisting boolean True if an LrKeyword instance is to be returned when a keyword with the specified name and parent already exists. This parameter is first supported in Lightroom 4.0.
 ---@return LrKeyword # The new keyword object, or false if a keyword already exists with the same name and parent, assuming that 'returnExisting' is not specified or false. If 'returnExisting' is true and the keyword with the same name and parent already exists, that keyword object will be returned.
 function LrCatalog:createKeyword(keywordName, synonyms, includeOnExport, parent, returnExisting) end
@@ -118,12 +118,12 @@ function LrCatalog:deleteAllEmptyMasks(photos) end
 --- Searches for a photo in this catalog by its absolute path in the file system.
 ---@param path string The absolute path to the photo file on disk.
 ---@param caseSensitivity any
----@return LrPhoto # The corresponding photo object, or nil if no such photo is in the catalog.
+---@return LrPhoto? # The corresponding photo object, or nil if no such photo is in the catalog.
 function LrCatalog:findPhotoByPath(path, caseSensitivity) end
 
 --- Searches for a photo in this catalog by its unique identifier.
 ---@param path string The UUID for the photo.
----@return LrPhoto # The corresponding photo object, or nil if no such photo is in the catalog.
+---@return LrPhoto? # The corresponding photo object, or nil if no such photo is in the catalog.
 function LrCatalog:findPhotoByUuid(path) end
 
 --- Searches for photos by arbitrary criteria.
@@ -203,11 +203,11 @@ function LrCatalog:getPhotosAvailableForEditing(photos) end
 --- Retrieves plug-in-specific data for this catalog, as previously set by catalog:setPropertyForPlugin().
 ---@param plugin (string | LrPlugin) Your plug-in object or the unique identifying string for the plug-in that declares this field.
 ---@param fieldId string The unique identifier of the metadata field.
----@return string # The value for the field, or nil if no value had been stored by the plug-in.
+---@return string? # The value for the field, or nil if no value had been stored by the plug-in.
 function LrCatalog:getPropertyForPlugin(plugin, fieldId) end
 
 --- Retrieves the publish services defined by a particular plug-in, or all publish services in this catalog.
----@param pluginId string Unique identifier of a plug-in, or nil to get all services.
+---@param pluginId string? Unique identifier of a plug-in, or nil to get all services.
 ---@return LrPublishService[] # The publish service objects.
 function LrCatalog:getPublishServices(pluginId) end
 
@@ -217,7 +217,7 @@ function LrCatalog:getPublishServices(pluginId) end
 function LrCatalog:getPublishedCollectionByLocalIdentifier(id) end
 
 --- Retrieves the active photo, if any.
----@return LrPhoto # The photo object, or nil if none is selected.
+---@return LrPhoto? # The photo object, or nil if none is selected.
 function LrCatalog:getTargetPhoto() end
 
 --- Retrieves the photo objects for the photos that would be affected by any photo-processing command.
@@ -253,7 +253,7 @@ function LrCatalog:setSelectedPhotos(activePhoto, otherSelectedPhotos) end
 
 --- Sets the library view filter programmatically.
 ---@param filter (string | table) A view filter preset, or a set of filter values: (string) The unique identifying string of a view filter preset. See LrApplication:viewFilterPresets. (table) The view filter values in a table, as returned by LrCatalog:getCurrentViewFilter.
----@return boolean # True if the filter was changed, false if it was already set as specified, or nil if the given filter preset could not be found.
+---@return boolean? # True if the filter was changed, false if it was already set as specified, or nil if the given filter preset could not be found.
 function LrCatalog:setViewFilter(filter) end
 
 --- Triggers an import, bypassing the import dialog, using the settings from the most recent import.

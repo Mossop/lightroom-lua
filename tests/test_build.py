@@ -76,7 +76,7 @@ class TestRealSdk:
 
     @pytest.mark.parametrize("module,line", [
         # "(<code>LrPhoto</code>) The corresponding photo object, or nil ..."
-        ("LrCatalog", "---@return LrPhoto # The corresponding photo object, or nil if no such photo is in the catalog."),
+        ("LrCatalog", "---@return LrPhoto? # The corresponding photo object, or nil if no such photo is in the catalog."),
         # "(array of LrPhoto) ..."
         ("LrCatalog", "---@return LrPhoto[] # The new virtual copies."),
         # Return value text that only starts with "True".

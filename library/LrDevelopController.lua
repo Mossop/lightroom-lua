@@ -142,7 +142,7 @@ function LrDevelopController.getSelectedPointColorSwatchIndex(isForMasking) end
 
 --- Get selected spot index in Remove tool.
 ---@param whichFeature string? Feature name. Allowed values: "manualRemove", "distractingPeopleRemoval". Default value: "manualRemove".
----@return number # returns index of selected spot in the list of all spots. Returns nil if no spot is selected.
+---@return number? # returns index of selected spot in the list of all spots. Returns nil if no spot is selected.
 function LrDevelopController.getSelectedSpotIndex(whichFeature) end
 
 --- Get selected spot params in Remove tool.

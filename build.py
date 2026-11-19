@@ -156,6 +156,27 @@ def parse_type_from_str(st, is_return = False):
 
     return (None, None, None)
 
+# Phrases in the first sentence of a description that mean the value can be nil.
+NIL_PHRASES = re.compile(r"""\bor nil\b|\bnil (if|to|for|when)\b|\b(can|may|might) be nil\b""", re.IGNORECASE)
+# The start of any sentence in a description that means the value can be nil.
+NIL_SENTENCE = re.compile(r"""^(returns )?nil\b""", re.IGNORECASE)
+
+def mark_optional(item_type, comment):
+    """Makes a type optional when its description says it can be nil.
+
+    Only the first sentence is checked for most phrases, because the rest often describes the
+    fields of a table or the arguments of a callback.
+    """
+    if item_type is None or comment is None:
+        return item_type
+    if item_type == "any" or item_type.endswith("?") or "," in item_type or "nil" in item_type:
+        return item_type
+
+    sentences = re.split(r"(?<=\.)\s+", comment)
+    if NIL_PHRASES.search(sentences[0]) or any(NIL_SENTENCE.search(s) for s in sentences):
+        return item_type + "?"
+    return item_type
+
 def find_by_class(tag, class_name):
     return tag.find_all(attrs={ "class": class_name })
 
@@ -331,6 +352,7 @@ class Argument(Item):
 
     def parse(self, tag):
         (self.item_type, _, self.comment) = parse_type_from_tag(tag)
+        self.item_type = mark_optional(self.item_type, self.comment)
 
     def fixed_type(self):
         if self.name == "id":
@@ -386,7 +408,7 @@ class Function(Item):
         if return_type is None:
             warn_missing_type(self)
             return_type = "any"
-        self.returns.append((return_type, comment))
+        self.returns.append((mark_optional(return_type, comment), comment))
 
     def found_type(self):
         override = super().found_type()

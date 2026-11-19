@@ -74,7 +74,7 @@ function LrProgressScope:setPausable(pausable, cancelable) end
 
 --- Sets the portion of this task that has been completed.
 ---@param amountDone number The degree of completion; a value between 0 and totalAmount, inclusive.
----@param totalAmount number The end value of the range, or nil to use the default range of [0..1]
+---@param totalAmount number? The end value of the range, or nil to use the default range of [0..1]
 function LrProgressScope:setPortionComplete(amountDone, totalAmount) end
 
 --- Reports the type of this object.

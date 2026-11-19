@@ -8,7 +8,7 @@ local LrPublishedCollection = {}
 --- Adds a photo with a remote ID and URL to this collection, if it is not a smart collection.
 ---@param photo LrPhoto The photo object.
 ---@param remoteID (string | number) The new remote unique identifier.
----@param remoteUrl string The new URL, or nil.
+---@param remoteUrl string? The new URL, or nil.
 ---@param published boolean True to mark the photo as "already published", false to mark as "need to publish".
 function LrPublishedCollection:addPhotoByRemoteId(photo, remoteID, remoteUrl, published) end
 
@@ -32,7 +32,7 @@ function LrPublishedCollection:getCollectionInfoSummary() end
 function LrPublishedCollection:getName() end
 
 --- Retrieves the parent collection set, if any, that contains this collection.
----@return LrPublishedCollectionSet # The parent set object or nil.
+---@return LrPublishedCollectionSet? # The parent set object or nil.
 function LrPublishedCollection:getParent() end
 
 --- Retrieves all of the photos in this collection.
@@ -84,7 +84,7 @@ function LrPublishedCollection:setCollectionSettings(settings) end
 function LrPublishedCollection:setName(name) end
 
 --- Sets a new parent for this published collection.
----@param parent LrPublishedCollectionSet The new parent set in the same LrPublishService, or nil to make this an immediate child of the service that contains it.
+---@param parent LrPublishedCollectionSet? The new parent set in the same LrPublishService, or nil to make this an immediate child of the service that contains it.
 function LrPublishedCollection:setParent(parent) end
 
 --- Sets the unique identifier for this published collection as understood by the remote service.

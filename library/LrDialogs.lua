@@ -38,7 +38,7 @@ function LrDialogs.presentModalDialog(args) end
 
 --- Invokes a dialog that prompts for an action, and includes a "Do not show" checkbox.
 ---@param args table The contents of the dialog, a table with these fields: message: (string) The main message. info: (string, optional) A secondary message shown in smaller text. actionPrefKey: (string) A key in which the chosen action is stored if do-not-show is checked. This key is added to your plug-in's list of settings. verbBtns: (table) An array of action buttons. Each entry is a table with these fields: label: (string) A localizable label for the button. verb:(string) A unique identifier for the action.
----@return string # The selected action identifier, or nil if the user cancels
+---@return string? # The selected action identifier, or nil if the user cancels
 function LrDialogs.promptForActionWithDoNotShow(args) end
 
 --- Resets one or both "Do not show" flags, as previously set by calls to messageWithDoNotShow() or promptForActionWithDoNotShow().
@@ -47,12 +47,12 @@ function LrDialogs.resetDoNotShowFlag(actionPrefKey) end
 
 --- Invokes the platform Open File dialog.
 ---@param args table A table with these fields: title: (string) The title of the dialog. prompt: (string) The label of the default button. Replaces "Open". canChooseFiles: (Boolean) True to allow files to be selected. canChooseDirectories: (Boolean) True to allow directories to be selected. canCreateDirectories: (Boolean) True to include a button to create directories. allowsMultipleSelection: (Boolean) True to allow multiple files to be selected. fileTypes: (string or table) The file types that can be selected. accessoryView: (LrView) A custom view to be included in the dialog. initialDirectory: (string, optional) Path to directory that should be initially opened.
----@return table # An array of path names or nil if the dialog was cancelled.
+---@return table? # An array of path names or nil if the dialog was cancelled.
 function LrDialogs.runOpenPanel(args) end
 
 --- Invokes the platform Save File dialog.
 ---@param args table A table with these fields: title: (string) The title of the dialog. prompt: (string) The label of the default button. Replaces "Save". requiredFileType: (string) The file extension of the file to be saved. canCreateDirectories: (Boolean) True to include a button to create directories. accessoryView: (LrView) A custom view to be included in the dialog.
----@return string # The path of the file that was saved or nil if the dialog was cancelled.
+---@return string? # The path of the file that was saved or nil if the dialog was cancelled.
 function LrDialogs.runSavePanel(args) end
 
 --- Shows a message in a window that quickly fades away.

@@ -55,11 +55,11 @@ function XmlDomInstance:attributes() end
 
 --- Retrieves a child of this element node by index.
 ---@param index any
----@return XmlDomInstance # The child node, or nil if this is not an element node.
+---@return XmlDomInstance? # The child node, or nil if this is not an element node.
 function XmlDomInstance:childAtIndex(index) end
 
 --- Reports the number of children of this element node.
----@return number # The number of children, or nil if this node is not an element node.
+---@return number? # The number of children, or nil if this node is not an element node.
 function XmlDomInstance:childCount() end
 
 --- Retrieves the name of the xml node from this XML document.

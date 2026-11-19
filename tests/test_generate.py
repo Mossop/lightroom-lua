@@ -173,7 +173,37 @@ def test_return_type_inside_code_and_links():
                  returns='(<code><a href="LrPhoto.html">LrPhoto</a></code>) The photo, or nil.'),
     ])
 
-    assert "---@return LrPhoto # The photo, or nil." in lines(generate_module("LrCatalog", html))
+    assert "---@return LrPhoto? # The photo, or nil." in lines(generate_module("LrCatalog", html))
+
+
+@pytest.mark.parametrize("description,expected", [
+    ("(LrCollectionSet) The new parent set, or nil to make this a top-level collection set.", "LrCollectionSet?"),
+    ("(string) The toolkit ID of the plug-in, or nil for the currently running plug-in.", "string?"),
+    ("(string) The new URL, or nil.", "string?"),
+    ("(string) The path.", "string"),
+    # Only the first sentence counts; the rest describes the callback.
+    ("(function) The callback. It receives the data, or nil on failure.", "function"),
+    ("(table) The chunks. The provider function returns nil when it is done.", "table"),
+    ("(optional, string) A name, or nil.", "string?"),
+])
+def test_parameter_nil_makes_type_optional(description, expected):
+    html = module_html(functions=[function("LrFoo.bar", "a", params=[("a", description)])])
+
+    assert any(l.startswith("---@param a %s " % expected) for l in lines(generate_module("LrFoo", html)))
+
+
+@pytest.mark.parametrize("returns,expected", [
+    ("(LrPhoto) The photo object, or nil if none is selected.", "LrPhoto?"),
+    ("(LrCollectionSet) The parent set object or nil.", "LrCollectionSet?"),
+    ("(number) The index of the selected spot. Returns nil if no spot is selected.", "number?"),
+    ("(Boolean or number) The negation. Nil for a source value of any other type.", "(boolean | number)?"),
+    ("(Boolean, string) True, or nil if it failed, and a message.", "boolean, string"),
+    ("(LrPhoto) The photo object.", "LrPhoto"),
+])
+def test_return_nil_makes_type_optional(returns, expected):
+    html = module_html(functions=[function("LrFoo.bar", returns=returns)])
+
+    assert any(l.startswith("---@return %s #" % expected) for l in lines(generate_module("LrFoo", html)))
 
 
 def test_whitespace_in_descriptions_is_collapsed():

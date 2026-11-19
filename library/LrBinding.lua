@@ -44,7 +44,7 @@ function LrBinding.makePropertyTable(functionContext) end
 --- Creates a binding that negates the source value, if it is Boolean or numeric.
 ---@param key string The key in the bound table whose value is observed.
 ---@param optObject table? If specified, overrides the default bound table.
----@return (boolean | number) # True if the source value is false, false if it is true. The negation of a numeric value. Nil for a source value of any other type.
+---@return (boolean | number)? # True if the source value is false, false if it is true. The negation of a numeric value. Nil for a source value of any other type.
 function LrBinding.negativeOfKey(key, optObject) end
 
 --- Creates a binding that determines if the values of any of the source keys evaluate to true.
