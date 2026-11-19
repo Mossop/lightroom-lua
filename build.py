@@ -87,18 +87,60 @@ def fix_type(st, is_return = False):
 def parse_type_from_tag(tag):
     return parse_type_from_str(text_content(tag))
 
+def split_leading_type(st):
+    """Splits text that starts with a parenthesised type into (type text, remaining text).
+
+    Nested parentheses are balanced. Returns None if the text doesn't start with "(".
+    """
+    if not st.startswith("("):
+        return None
+
+    depth = 0
+    for i, c in enumerate(st):
+        if c == "(":
+            depth += 1
+        elif c == ")":
+            depth -= 1
+            if depth == 0:
+                return (st[1:i], re.sub(r"^\s*[\.:-]?\s*", "", st[i + 1:]))
+    return None
+
+def clean_type_text(st):
+    """Tidies up the text inside a type's parentheses before it is passed to fix_type."""
+    st = st.strip()
+
+    # A callback's signature, such as "function( observer, message )".
+    if re.search(r"^function\s*\(", st):
+        return "function"
+
+    # "string (or, as of Lightroom 4.1, a function)".
+    st = re.sub(r"\s*\(or\b[^()]*?\b(?:an? )?(\w+)\)", r" or \1", st)
+    # Any other aside.
+    st = re.sub(r"\s*\([^()]*\)", "", st)
+    return st
+
+def parse_leading_type(st, is_return):
+    split = split_leading_type(st)
+    if split is None:
+        return None
+    (type_text, rest) = split
+    comment = fix_comment(rest)
+    return (fix_type(clean_type_text(type_text), is_return), comment if comment != "" else None)
+
 def parse_type_from_str(st, is_return = False):
     print("    parse: %s" % st)
     if re.search(r"""^(true|false)[\s\.,$]""", st, re.IGNORECASE):
         return ("boolean", None, fix_comment(st))
 
-    match = re.search(r"""^\(([^)]+)\)\.? (.+)$""", st)
-    if match:
-        return (fix_type(match.group(1), is_return), None, fix_comment(match.group(2)))
+    parsed = parse_leading_type(st, is_return)
+    if parsed is not None:
+        return (parsed[0], None, parsed[1])
 
-    match = re.search(r"""^(\S+)\s+\(([^)]+)\) (.+)$""", st)
+    match = re.search(r"""^(\S+)\s+(\(.*)$""", st)
     if match:
-        return (fix_type(match.group(2), is_return), match.group(1), fix_comment(match.group(3)))
+        parsed = parse_leading_type(match.group(2), is_return)
+        if parsed is not None:
+            return (parsed[0], match.group(1), parsed[1])
 
     match = re.search(r"""^an iterator for all (.+?)s?(\.|$)""", st, re.IGNORECASE)
     if match:

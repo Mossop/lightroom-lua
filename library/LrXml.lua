@@ -55,7 +55,7 @@ function XmlDomInstance:attributes() end
 
 --- Retrieves a child of this element node by index.
 ---@param index any
----@return any
+---@return XmlDomInstance # The child node, or nil if this is not an element node.
 function XmlDomInstance:childAtIndex(index) end
 
 --- Reports the number of children of this element node.
@@ -76,7 +76,7 @@ function XmlDomInstance:serialize() end
 function XmlDomInstance:text() end
 
 --- Transforms this XML into string output by applying an XSLT transformation.
----@param xsltString any
+---@param xsltString string A valid XSLT style sheet, as a string.
 ---@return string # The output of the XSLT transformation.
 function XmlDomInstance:transform(xsltString) end
 

@@ -6,13 +6,13 @@ local LrDevelopController = {}
 --- Registers a callback to be called any time the adjustments in the Develop module change.
 ---@param functionContext LrFunctionContext The function context that retains the observation.
 ---@param observer table An object that uniquely identifies the observer. Will be passed into the callback.
----@param callback  function( observer  ) Function that will be called.
+---@param callback function Function that will be called.
 function LrDevelopController.addAdjustmentChangeObserver(functionContext, observer, callback) end
 
 --- Add new Point Color Swatch.
 ---@param swatchTable table A table with the following fields :- SrcHue: (number) Source color's hue value. Values from 0 to 6 are allowed. SrcSat: (number) Source color's saturation value. Values from 0 to 1 are allowed. SrcLum: (number) Source color's luminance value. Values from 0 to 1 are allowed. HueShift: (optional,number) Hue shift. Values from -1 to 1 are allowed. Default: 0. SatScale: (optional,number) Saturation shift. Values from -1 to 1 are allowed. Default: 0. LumScale: (optional,number) Luminance shift. Values from -1 to 1 are allowed. Default: 0. Variance: (optional,number) Variance. Values from -1 to 1 are allowed. Default: 0. RangeAmount: (optional,number) Range amount. Values from 0 to 1 are allowed. Default: 0.5 HueRange: (optional,table) Hue range. LowerNone: (number) outer left limit. Values from 0 to 1 are allowed. LowerFull: (number) inner left limit. Values from 0 to 1 are allowed. UpperFull: (number) inner right limit. Values from 0 to 1 are allowed. UpperNone: (number) outer right limit. Values from 0 to 1 are allowed. SatRange: (optional,table) Saturation range. Follows same table format as HueRange above. LumRange: (optional,table) Luminance range. Follows same table format as HueRange above.
 ---@param isForMasking boolean? Set to true if targeting the point colors in masking.
----@return boolean, string # - returns true if new swatch is successfully added. For failures, returns false and an error message. If given color swatch is already present but not selected, then the existing swatch would get selected and no error message is returned.
+---@return boolean, string # returns true if new swatch is successfully added. For failures, returns false and an error message. If given color swatch is already present but not selected, then the existing swatch would get selected and no error message is returned.
 function LrDevelopController.addPointColorSwatch(swatchTable, isForMasking) end
 
 --- Add to the current mask.
@@ -41,7 +41,7 @@ function LrDevelopController.changeReflectionRemovalQuality(quality, callback, c
 
 --- Count all spots on an image.
 ---@param whichFeature string? Feature name. Allowed values: "manualRemove", "distractingPeopleRemoval". Default value: "manualRemove".
----@return number # - returns the count of all spots on the selected image.
+---@return number # returns the count of all spots on the selected image.
 function LrDevelopController.countAllSpots(whichFeature) end
 
 --- Create a new mask.
@@ -65,10 +65,10 @@ function LrDevelopController.deleteMask(id, param) end
 function LrDevelopController.deleteMaskTool(id, param) end
 
 --- Delete Point Color Swatch.
----@param deleteAll  boolean  - Delete all the color swatches
----@param deleteAtIndex  number  - Delete the color swatch present at the index provided. "deleteAll" should be false if a single swatch needs to be deleted.
----@param isForMasking  boolean  - Set to true when targeting the point colors in masking.
----@return  boolean  # - true if deletion is successful. Returns false when the param 'deleteAtIndex' is out of bounds. i.e., no point color is present at the index provided.
+---@param deleteAll boolean Delete all the color swatches
+---@param deleteAtIndex number Delete the color swatch present at the index provided. "deleteAll" should be false if a single swatch needs to be deleted.
+---@param isForMasking boolean Set to true when targeting the point colors in masking.
+---@return boolean # true if deletion is successful. Returns false when the param 'deleteAtIndex' is out of bounds. i.e., no point color is present at the index provided.
 function LrDevelopController.deletePointColorSwatch(deleteAll, deleteAtIndex, isForMasking) end
 
 --- Delete selected spot.
@@ -100,7 +100,7 @@ function LrDevelopController.getAllMasks() end
 
 --- Get list of all spots on an image.
 ---@param whichFeature string? Feature name. Allowed values: "manualRemove", "distractingPeopleRemoval". Default value: "manualRemove".
----@return table # - returns list of all the spots on the selected image.
+---@return table # returns list of all the spots on the selected image.
 function LrDevelopController.getAllSpots(whichFeature) end
 
 --- Get Enhance panel state.
@@ -136,13 +136,13 @@ function LrDevelopController.getSelectedMask() end
 function LrDevelopController.getSelectedMaskTool() end
 
 --- Get selected Point Color Swatch Index.
----@param isForMasking  boolean  - For local point colors, set this to true and also make sure to have the masking panel open.
----@return number # - returns index of the select swatch/point-color.
+---@param isForMasking boolean For local point colors, set this to true and also make sure to have the masking panel open.
+---@return number # returns index of the select swatch/point-color.
 function LrDevelopController.getSelectedPointColorSwatchIndex(isForMasking) end
 
 --- Get selected spot index in Remove tool.
 ---@param whichFeature string? Feature name. Allowed values: "manualRemove", "distractingPeopleRemoval". Default value: "manualRemove".
----@return number # - returns index of selected spot in the list of all spots. Returns nil if no spot is selected.
+---@return number # returns index of selected spot in the list of all spots. Returns nil if no spot is selected.
 function LrDevelopController.getSelectedSpotIndex(whichFeature) end
 
 --- Get selected spot params in Remove tool.
@@ -289,8 +289,8 @@ function LrDevelopController.selectMask(id, param) end
 function LrDevelopController.selectMaskTool(id, param) end
 
 --- Select Point Color Swatch for making HSL shifts.
----@param value number - Swatch index to be selected. Integer values from 1 to 8 are allowed.
----@param isForMasking  boolean  - this value should be set to true for local point colors and masking view needs to be active.
+---@param value number Swatch index to be selected. Integer values from 1 to 8 are allowed.
+---@param isForMasking boolean this value should be set to true for local point colors and masking view needs to be active.
 function LrDevelopController.selectPointColorSwatch(value, isForMasking) end
 
 --- Select a tool mode in Develop.
@@ -327,13 +327,13 @@ function LrDevelopController.setProcessVersion(value) end
 
 --- Set UI Preferences in Remove panel.
 ---@param preferencesTable table A table that includes any of the following fields can be passed :- newSpotType: (optional,string) Spot type used for creating new spots. Allowed values: "heal_patchmatch", "heal", "clone". brushSize: (optional,number) Brush size. Values from 1 to 100 are allowed. brushFeather: (optional,number) Brush feather. Values from 0 to 100 are allowed. useGenerativeAI: (optional,bool) Value of "use generatve AI" checkbox. detectObjects: (optional,bool) Value of "detect objects" checkbox. toolOverlay: (optional,string) Tool overlay mode. Allowed values: "always", "auto", "selected", "never". visualizeSpots: (optional,bool) Value of "visualize Spots" checkbox. visualizationThreshold: (optional,number) Slider value of "visualize spots". Values from 0 to 100 are allowed.
----@return boolean, string # - returns true for success. For failures, returns false and an error message.
+---@return boolean, string # returns true for success. For failures, returns false and an error message.
 function LrDevelopController.setRemovePanelPreferences(preferencesTable) end
 
 --- Set selected spot index in Remove tool.
 ---@param spotIndex number index of spot that should be selected.
 ---@param whichFeature string? Feature name. Allowed values: "manualRemove", "distractingPeopleRemoval". Default value: "manualRemove".
----@return boolean, string # - returns true for success. For failures, returns false and an error message.
+---@return boolean, string # returns true for success. For failures, returns false and an error message.
 function LrDevelopController.setSelectedSpotIndex(spotIndex, whichFeature) end
 
 --- Set selected spot params in Remove tool.
@@ -413,7 +413,7 @@ function LrDevelopController.toggleReflectionRemoval(amount, quality, callback, 
 --- Update selected Point Color Swatch.
 ---@param colorSwatchTable table a table representing the color swatch. It should have the following fields. SrcHue: (number) Source color's hue value. Values from 0 to 6 are allowed. SrcSat: (number) Source color's saturation value. Values from 0 to 1 are allowed. SrcLum: (number) Source color's luminance value. Values from 0 to 1 are allowed. HueShift: (number) Hue shift. Values from -1 to 1 are allowed. SatScale: (number) Saturation shift. Values from -1 to 1 are allowed. LumScale: (number) Luminance shift. Values from -1 to 1 are allowed. Variance: (number) Variance. Values from -1 to 1 are allowed. RangeAmount: (number) Range amount. Values from 0 to 1 are allowed. HueRange: (table) Hue range. LowerNone: (number) outer left limit. Values from 0 to 1 are allowed. LowerFull: (number) inner left limit. Values from 0 to 1 are allowed. UpperFull: (number) inner right limit. Values from 0 to 1 are allowed. UpperNone: (number) outer right limit. Values from 0 to 1 are allowed. SatRange: (table) Saturation range. Follows same table format as HueRange above. LumRange: (table) Luminance range. Follows same table format as HueRange above.
 ---@param isForMasking boolean? Set to true when targeting the point colors in masking.
----@return boolean, string # - returns true if swatch is updated successfully. For failures, returns false and an error message.
+---@return boolean, string # returns true if swatch is updated successfully. For failures, returns false and an error message.
 function LrDevelopController.updateSelectedPointColorSwatch(colorSwatchTable, isForMasking) end
 
 return LrDevelopController

@@ -52,7 +52,7 @@ function LrCatalog:assertHasWriteAccess(funcName) end
 function LrCatalog:batchGetFormattedMetadata(photos, keys) end
 
 --- Retrieves plug-in metadata for multiple photos.
----@param photos any
+---@param photos LrPhoto[] The photo objects to inspect.
 ---@param plugin (string | LrPlugin) Your plug-in object or the unique identifying string for the plug-in that declares this field.
 ---@param fieldIds string[] The metadata items to retrieve.
 ---@return table # The result, a table with this structure: result = { [ LrPhoto #1 ] = { field1 = (value1), field2 = (value2), }, [ LrPhoto #2 ] = { field1 = (value1), field2 = (value2), }, }
@@ -160,7 +160,7 @@ function LrCatalog:getChildCollections() end
 function LrCatalog:getCollectionByLocalIdentifier(id) end
 
 --- Retrieves the value of the current library view filter.
----@return any
+---@return table # The current library view filter, a table with these members: export: (string) The active search target, one of "all", "exported", "notexported". stack: (string) The active search target, one of "all", "stacked", "notstacked". columnBrowserActive: (Boolean) True if Metadata filter is active. filtersActive: (Boolean) True if Attribute filter is active. searchStringActive : (Boolean) True if Text filter is active. label1: (Boolean) True if red label filter is active. label2: (Boolean) True if yellow label filter is active. label3 : (Boolean) True if green label filter is active. label4: (Boolean) True if blue label filter is active. label5: (Boolean) True if purple label filter is active. customLabel: (Boolean) True if custom filter is active. nolabel: (Boolean) True if "no label" filter is active. minRating: (number) The star value of active rating filter. ratingOp: (string) The active rating comparison operation, one of ">=", "<=" or "==". pick: (string) Any combination of "flagged", "rejected", "unflagged". edit: (string) Any combination of "edited", "unedited". whichCopies: (string) Any combination of "masterImages", "virtualCopies", "videos". searchOp: (string) The active search operation, one of "all", "words", "noneof", "beginwith", "endswith". searchString: (string) The active search string. searchTarget: (string) The active search target, one of "all", "filename", "copyname", "title", "caption", "keyword", "metadata", "iptc", "exif", "allPluginMetadata". columnBrowserDesc : (table) The metadata to consider, in this format: { { criteria = metadataName }, ... }.
 ---@return string # The preset's name if the current view filter is a preset, otherwise nil.
 function LrCatalog:getCurrentViewFilter() end
 

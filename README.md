@@ -47,7 +47,7 @@ This deletes and rewrites `library/`. Review the diff before committing it.
    - If a namespace and an instance class would get the same name, the namespace gets a `Namespace` suffix, as in `LrFunctionContextNamespace`.
    - When a page has only one base, that base takes the module's name. That is why `plugin:hasResource` becomes `LrPlugin:hasResource`.
 3. **Inferring types.** The docs are written for people, so types are inferred from prose:
-   - **A leading parenthesised type.** `(optional, string) The title.` becomes `string?`. `fix_type` then normalises what is inside the parentheses:
+   - **A leading parenthesised type.** `(optional, string) The title.` becomes `string?`. Nested parentheses are balanced, so a callback signature such as `( function( observer ) )` becomes `function`, and other asides inside the type are dropped. `fix_type` then normalises what is inside the parentheses:
      - `optional` anywhere marks the type as optional.
      - `a or b` becomes `(a | b)`.
      - `array of X` and `table of X` become `X[]`.
@@ -90,7 +90,6 @@ These are the cases where the generator currently produces wrong or unhelpful ty
 | `(any type)` | `any type` | `any` |
 | `(string or array)` | `(string \| array)` | `(string \| any[])` |
 | `(table of arrays)` | `arrays[]` | `table<string, any[]>` |
-| `( function( observer, message ) ) …` | broken type, and the comment starts with `)` | `function` |
 | A return value of just `true` | not recognised | `boolean` (the `$` in the regex character class is literal) |
 | A function with no `function_summary` | takes the next element's text as its comment | no comment. The current SDK does not hit this |
 | `(Boolean + ...)` (`LrTasks.pcall`) | `Boolean + ...` | `boolean` followed by varargs. **No test yet** |

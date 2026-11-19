@@ -28,7 +28,7 @@ function LrPublishService:createPublishedCollectionSet(name, parent, canReturnEx
 function LrPublishService:createPublishedSmartCollection(name, searchDesc, parent, canReturnExisting) end
 
 --- Retrieves the photo collection sets that are immediate children of this service.
----@return any
+---@return LrPublishedCollectionSet[] # The contained collection-set objects.
 function LrPublishService:getChildCollectionSets() end
 
 --- Retrieves the photo collections that are immediate children of this service.

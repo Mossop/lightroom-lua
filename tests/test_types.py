@@ -226,8 +226,31 @@ class TestParseTypeFromStr:
     def test_unrecognised_text(self, text):
         assert parse_type_from_str(text) == (None, None, None)
 
-    @known_bug("nested parentheses end the type early")
-    def test_function_signature_type(self):
+    @pytest.mark.parametrize("text", [
         # LrApplication.addActivityObserver's callback.
-        assert parse_type_from_str("( function( observer, message ) ) The function that will be called.") == (
-            "function", None, "The function that will be called.")
+        "( function( observer, message ) ) The function that will be called.",
+        # LrDevelopController.addAdjustmentChangeObserver's callback.
+        "( function( observer  ) ) The function that will be called.",
+    ])
+    def test_function_signature_type(self, text):
+        assert parse_type_from_str(text) == ("function", None, "The function that will be called.")
+
+    @pytest.mark.parametrize("text,expected", [
+        # xmlDomInstance:childAtIndex.
+        ("(xmlDomInstance)The child node.", ("XmlDomInstance", None, "The child node.")),
+        # xmlDomInstance:transform's xsltString.
+        ("(string): A valid XSLT style sheet.", ("string", None, "A valid XSLT style sheet.")),
+        # LrDevelopController.deleteAllColorSwatches.
+        ("( boolean ) - Delete all the color swatches", ("boolean", None, "Delete all the color swatches")),
+        ("(string)", ("string", None, None)),
+    ])
+    def test_parenthesised_type_spacing(self, text, expected):
+        assert parse_type_from_str(text) == expected
+
+    def test_nested_or_aside(self):
+        # LrHttp.post's postBody.
+        assert parse_type_from_str("(string (or, as of Lightroom 4.1, a function)) The data to send.") == (
+            "(string | function)", None, "The data to send.")
+
+    def test_nested_aside_is_dropped(self):
+        assert parse_type_from_str("(number (in seconds)) The delay.") == ("number", None, "The delay.")

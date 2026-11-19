@@ -22,7 +22,7 @@ function LrHttp.parseCookie(cookie, decodeUrlEncoding) end
 
 --- Sends or retrieves data using HTTP or HTTPS POST.
 ---@param url string The URL to post to.
----@param postBody any
+---@param postBody (string | function) The data to send. As of Lightroom 4.1, this may also be a callback function to be called to provide data chunks. This function must return nil when all the data has been provided, which will be the last time it is called.
 ---@param headers table? A table of tables, one for each header. Each header table has a 'field' and a 'value' entry. To specify the content type of your post, include a "Content-Type" header. Unless you specify a 'Content-Type' header, Lightroom will add such a header with a value of 'text/plain'. To force the omission of a 'Content-Type' header, specify a 'Content-Type' header with a value of 'skip'.
 ---@param method string? The name of the HTTP method to use. Default is "POST".
 ---@param timeout number? The length of time (in seconds) to wait during each phase of the connection before canceling the request. This parameter will be ignored by Lightroom 1.3 and 1.4.
