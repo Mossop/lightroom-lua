@@ -51,7 +51,7 @@ This deletes and rewrites `library/`. Review the diff before committing it.
      - `optional` anywhere marks the type as optional.
      - `a or b` becomes `(a | b)`.
      - `array of X` and `table of X` become `X[]`.
-     - Comma lists become tuples.
+     - Comma lists, such as `string, function, or table`, become unions. In a return value without an "or", such as `(Boolean, string)`, they become multiple return values.
      - `TYPE_MAP` translates informal names: `Boolean` → `boolean`, `_PLUGIN` → `LrPlugin`, `builderInstance` → `XmlBuilderInstance`, `export rendition` → `LrExportRendition`, and so on.
    - **A named return value**, such as `success (Boolean) …`.
    - **A "Return values" list**, where each entry becomes its own `---@return`.
@@ -85,9 +85,6 @@ These are the cases where the generator currently produces wrong or unhelpful ty
 | Doc text | Generated | Should be |
 | --- | --- | --- |
 | `(array of strings)` | `string[][]` | `string[]` |
-| `(Boolean, string)` as a return value | `[boolean, string]` (one tuple) | `boolean, string` (two return values) |
-| `(string,bool)` (no space after the comma) | `string,bool` | same as `string, bool` |
-| `(string, function, or table)` | `([string, function,] \| table)` | `(string \| function \| table)` |
 | `(LrCollection and LrCollectionSet)` | left as-is | `(LrCollection \| LrCollectionSet)` |
 | `(one or more strings)` | `(one \| more strings)` | `string` |
 | `(any type)` | `any type` | `any` |

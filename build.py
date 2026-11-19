@@ -49,10 +49,23 @@ def strip_tags(st):
 def fix_comment(comment):
     return comment.strip()
 
-def fix_type(st):
+def fix_type(st, is_return = False):
+    """Converts a type written in the docs to a LuaLS type.
+
+    A comma-separated list is a union, unless it is a return value's type and has no "or", in
+    which case it lists multiple return values.
+    """
     print("      fix: %s" % st)
     if "optional" in st:
         return fix_type(st.replace("optional", "").strip(" ,")) + "?"
+
+    if "," in st:
+        parts = [re.sub(r"^or ", "", s.strip()) for s in st.split(",")]
+        parts = [s for s in parts if s != ""]
+        types = [fix_type(s) for s in parts]
+        if is_return and not re.search(r"\bor\b", st):
+            return ", ".join(types)
+        return "(" + " | ".join(types) + ")"
 
     if st.startswith("array of "):
         inner = fix_type(st[9:])
@@ -62,9 +75,6 @@ def fix_type(st):
 
     if " or " in st:
         return "(" + " | ".join([fix_type(s) for s in st.split(" or ")]) + ")"
-
-    if ", " in st:
-        return "[" + ", ".join([fix_type(s) for s in st.split(", ")]) + "]"
 
     if st.startswith("table of "):
         return fix_type(st[9:]) + "[]"
@@ -77,18 +87,18 @@ def fix_type(st):
 def parse_type_from_tag(tag):
     return parse_type_from_str(text_content(tag))
 
-def parse_type_from_str(st):
+def parse_type_from_str(st, is_return = False):
     print("    parse: %s" % st)
     if re.search(r"""^(true|false)[\s\.,$]""", st, re.IGNORECASE):
         return ("boolean", None, fix_comment(st))
 
     match = re.search(r"""^\(([^)]+)\)\.? (.+)$""", st)
     if match:
-        return (fix_type(match.group(1)), None, fix_comment(match.group(2)))
+        return (fix_type(match.group(1), is_return), None, fix_comment(match.group(2)))
 
     match = re.search(r"""^(\S+)\s+\(([^)]+)\) (.+)$""", st)
     if match:
-        return (fix_type(match.group(2)), match.group(1), fix_comment(match.group(3)))
+        return (fix_type(match.group(2), is_return), match.group(1), fix_comment(match.group(3)))
 
     match = re.search(r"""^an iterator for all (.+?)s?(\.|$)""", st, re.IGNORECASE)
     if match:
@@ -319,7 +329,7 @@ class Function(Item):
         self.arguments[name].parse(tag)
 
     def parse_return(self, text):
-        (return_type, _, comment) = parse_type_from_str(text)
+        (return_type, _, comment) = parse_type_from_str(text, is_return = True)
         if return_type is None:
             warn_missing_type(self)
             return_type = "any"

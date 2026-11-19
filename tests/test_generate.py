@@ -324,13 +324,20 @@ def test_modules_do_not_leak_into_each_other():
     assert lua.endswith("\nreturn LrBaz\n")
 
 
-@known_bug("comma-separated return types become a tuple instead of multiple return values")
 def test_multiple_return_values_in_one_type():
     html = module_html(functions=[
         function("LrFoo.bar", returns="(Boolean, string) Whether it worked, and why not."),
     ])
 
     assert "---@return boolean, string # Whether it worked, and why not." in lines(generate_module("LrFoo", html))
+
+
+def test_comma_separated_parameter_type_is_a_union():
+    html = module_html(functions=[
+        function("LrFoo.bar", "a", params=[("a", "(number, string, Boolean) The time zone.")]),
+    ])
+
+    assert "---@param a (number | string | boolean) The time zone." in lines(generate_module("LrFoo", html))
 
 
 def return_values(name, items):

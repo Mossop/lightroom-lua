@@ -39,7 +39,7 @@ function LrDate.formatShortTime(time) end
 ---@param hour number The hour, in the range [0..23]
 ---@param minute number The minute, in the range [0..59]
 ---@param second number The second, in the range [0..59]
----@param timeZone [number, string, boolean] The string "local" or true to use the local time zone, or an explicit time zone, expressed as the difference in seconds from UTC. For example, U.S. Pacific Standard Time is -28800. Warning: The 1.3 SDK documentation incorrectly stated that the timeZone parameter was expressed in hours relative to UTC.
+---@param timeZone (number | string | boolean) The string "local" or true to use the local time zone, or an explicit time zone, expressed as the difference in seconds from UTC. For example, U.S. Pacific Standard Time is -28800. Warning: The 1.3 SDK documentation incorrectly stated that the timeZone parameter was expressed in hours relative to UTC.
 ---@return number # The time as a Cocoa date stamp; that is, a number of seconds since midnight UTC on January 1, 2001.
 function LrDate.timeFromComponents(year, month, day, hour, minute, second, timeZone) end
 

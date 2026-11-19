@@ -120,13 +120,25 @@ class TestFixType:
     def test_array_of_and_union(self):
         assert fix_type("array of LrCollection and LrCollectionSet") == "(LrCollection | LrCollectionSet)[]"
 
-    @known_bug("Oxford-comma lists split on ' or ' first, leaving a mangled tuple")
     @pytest.mark.parametrize("text,expected", [
         ("string, function, or table", "(string | function | table)"),
         ("nil, number, string, or Boolean", "(nil | number | string | boolean)"),
+        # LrDate.timeStampToComponents's timeZone.
+        ("number, string, boolean", "(number | string | boolean)"),
     ])
     def test_comma_separated_union(self, text, expected):
         assert fix_type(text) == expected
+
+    @pytest.mark.parametrize("text,expected", [
+        ("Boolean, string", "boolean, string"),
+        ("number, number", "number, number"),
+        ("string,bool", "string, boolean"),
+    ])
+    def test_comma_separated_return_values(self, text, expected):
+        assert fix_type(text, is_return=True) == expected
+
+    def test_comma_separated_union_in_return_value(self):
+        assert fix_type("string, function, or table", is_return=True) == "(string | function | table)"
 
     @known_bug("'arrays' is not a type, so this produces 'arrays[]'")
     def test_table_of_arrays(self):
@@ -146,7 +158,6 @@ class TestFixType:
     def test_bare_array(self):
         assert fix_type("string or array") == "(string | any[])"
 
-    @known_bug("lists without a space after the comma are left as-is")
     def test_list_without_spaces(self):
         assert fix_type("string,bool") == fix_type("string, bool")
 

@@ -16,7 +16,7 @@ function LrLogger:debugf(format, ...) end
 function LrLogger:disable() end
 
 --- Enables specific log output from this logger.
----@param actions ([string, function,] | table) What action to take for each log action type. For each of the action types, this must be either a function that takes a string (the log message), or one of the following strings: print: print to console log traceback: print to console log with stack traceback logfile: print to a log file named for the logger. The log file is written to the following locations: On macOS: ~/Library/Logs/Adobe/Lightroom/LrClassicLogs On Windows: %LOCALAPPDATA%\Adobe\Lightroom\Logs\LrClassicLogs As a shortcut, you can pass a single string or function, which is applied to all of the log output from this logger.
+---@param actions (string | function | table) What action to take for each log action type. For each of the action types, this must be either a function that takes a string (the log message), or one of the following strings: print: print to console log traceback: print to console log with stack traceback logfile: print to a log file named for the logger. The log file is written to the following locations: On macOS: ~/Library/Logs/Adobe/Lightroom/LrClassicLogs On Windows: %LOCALAPPDATA%\Adobe\Lightroom\Logs\LrClassicLogs As a shortcut, you can pass a single string or function, which is applied to all of the log output from this logger.
 function LrLogger:enable(actions) end
 
 --- Feeds log output through the action function defined for 'error' messages.
