@@ -77,6 +77,8 @@ function LrApplication.versionString() end
 function LrApplication.versionTable() end
 
 --- Reports available view-filter presets.
+---@return table # A table describing each of the available view-filter presets, or an empty table if no presets exist. key: The preset name. value: The UUID or path to the preset's definition.
+---@return string # If a named filter is currently invoked, the name of that filter.
 function LrApplication.viewFilterPresets() end
 
 return LrApplication

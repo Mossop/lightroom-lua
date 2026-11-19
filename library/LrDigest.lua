@@ -7,6 +7,8 @@ local Factory = {}
 ---@param input string Add the input string to the ongoing digest
 ---@param digest_name string one of the digests support in this namespace: "SHA256" or "SHA512". Only used for HMAC.
 ---@param key string the key for HMAC. Only used for HMAC.
+---@return string # The digest, as a hex string
+---@return string # The digest, as a binary data string.
 function Factory.digest(input, digest_name, key) end
 
 --- Create a new digester instance
@@ -26,6 +28,8 @@ function LrDigest.HMAC.init(digest_name, key) end
 local digester = {}
 
 --- Compute the current digest for the digester
+---@return string # The digest, as a hex string
+---@return string # The digest, as a binary data string
 function digester:digest() end
 
 --- Clear a digester making ready for reuse

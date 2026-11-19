@@ -333,17 +333,59 @@ def test_multiple_return_values_in_one_type():
     assert "---@return boolean, string # Whether it worked, and why not." in lines(generate_module("LrFoo", html))
 
 
-@known_bug("only a 'Return value' header is recognised, not 'Return values'")
-def test_return_values_list():
-    # Like LrHttp.get, which currently relies on TYPE_OVERRIDES.
-    summary, definition = function("LrFoo.bar")
+def return_values(name, items):
+    """Builds a function whose return values are a "Return values" list, like LrHttp.get."""
+    summary, definition = function(name)
     definition = definition.replace("</dd>", """<h3>Return values</h3>
 <ol class="retval_list">
-<li>(string) The body.
-<li>(table) The headers.
+%s
 </ol>
-</dd>""")
+</dd>""" % "\n".join("\t<li>%s\n\t</li>" % item for item in items))
+    return (summary, definition)
 
-    lua = generate_module("LrFoo", module_html(functions=[(summary, definition)]))
-    assert any(l.startswith("---@return string") for l in lines(lua))
-    assert any(l.startswith("---@return table") for l in lines(lua))
+
+def test_return_values_list():
+    html = module_html(functions=[return_values("LrFoo.bar", [
+        "(string) The body.",
+        "(table) A table of tables, one for each header. <ul><li>key: The name.</li></ul>",
+    ])])
+
+    lua = lines(generate_module("LrFoo", html))
+    i = lua.index("function LrFoo.bar() end")
+    assert lua[i - 2:i] == [
+        "---@return string # The body.",
+        "---@return table # A table of tables, one for each header. key: The name.",
+    ]
+
+
+def test_named_return_values_list():
+    # Like LrDigest's Factory.digest.
+    html = module_html(functions=[return_values("LrFoo.bar", [
+        "digestHex (string) The digest, as a hex string",
+        "digestBin (string) The digest, as a binary data string.",
+    ])])
+
+    lua = lines(generate_module("LrFoo", html))
+    assert "---@return string # The digest, as a hex string" in lua
+    assert "---@return string # The digest, as a binary data string." in lua
+
+
+def test_unparseable_entry_in_return_values_list_is_any():
+    # Like photo:getPropertyForPlugin.
+    html = module_html(functions=[return_values("LrFoo.bar", [
+        "(any) The value.",
+        "An error message on error.",
+    ])])
+
+    lua = lines(generate_module("LrFoo", html))
+    assert "---@return any # The value." in lua
+    assert "---@return any" in lua
+
+
+def test_override_replaces_all_return_values(monkeypatch):
+    monkeypatch.setitem(build.TYPE_OVERRIDES, "LrFoo.bar", "string, table?")
+    html = module_html(functions=[return_values("LrFoo.bar", ["(string) The body.", "(table) The headers."])])
+
+    lua = lines(generate_module("LrFoo", html))
+    assert "---@return string, table?" in lua
+    assert not any(l.startswith("---@return string #") for l in lua)

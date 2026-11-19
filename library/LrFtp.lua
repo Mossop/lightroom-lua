@@ -18,6 +18,9 @@ function LrFtp.create(params, autoNegotiate) end
 --- A validator function for use in LrView UI control definitions.
 ---@param view LrView The view object.
 ---@param inValue any The proposed new value for the view.
+---@return boolean # True if the value is valid
+---@return any # The new value for the view. If valid, this is the same as inValue.
+---@return string # An error message to be displayed if the value was invalid.
 function LrFtp.ftpPathValidator(view, inValue) end
 
 --- Creates and returns a pop-up menu view object for accessing FTP presets.
@@ -61,10 +64,14 @@ function LrFtpConnection:makeDirectory(directoryName) end
 
 --- Removes a directory on the remote server.
 ---@param directoryName string The name of the directory to remove.
+---@return boolean # True if the function completed correctly
+---@return (string | boolean) # On failure, the error message. On success, true if a check for the directory after the operation completed shows it to be deleted.
 function LrFtpConnection:pRemoveDirectory(directoryName) end
 
 --- Removes a file on the remote server.
 ---@param filename string The name of the file to remove.
+---@return boolean # True if the function completed correctly
+---@return string/Boolean # On failure, the error message. On success, true if a check for the file after the operation completed shows it to be deleted.
 function LrFtpConnection:pRemoveFile(filename) end
 
 --- Sends a file from the local filesystem to the remote server.

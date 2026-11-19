@@ -32,5 +32,6 @@ function LrExportRendition:type() end
 function LrExportRendition:uploadFailed(message) end
 
 --- Causes the export task to yield time to other tasks until this rendition has been fully generated.
----@return boolean, string
+---@return boolean # True if rendering was successful.
+---@return string # The path to the photo if successful, or an informative message suitable for display if the operation was not successful.
 function LrExportRendition:waitForRender() end

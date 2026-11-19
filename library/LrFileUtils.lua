@@ -16,6 +16,8 @@ function LrFileUtils.copy(srcPath, destPath) end
 
 --- Creates a directory at a given path, recursively creating any parent directories that do not already exist.
 ---@param path string The path of the new directory.
+---@return boolean # True if there were no errors, false if there were errors creating directories in the path.
+---@return (string | boolean) # A string describing the error if there were errors creating directories; otherwise, true if one or more directories were created, or false if all the directories already existed.
 function LrFileUtils.createAllDirectories(path) end
 
 --- Creates a directory at a given path.

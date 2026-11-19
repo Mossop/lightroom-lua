@@ -97,6 +97,8 @@ function LrPhoto:getNameViaPreset(filenamePresetId, customString, sequenceNumber
 ---@param fieldId string The metadata field's unique identifying key.
 ---@param optVersion number? The version number for the field (only valid in schema update handlers).
 ---@param noThrow boolean? True to return an error (nil, error) instead of throwing an exception on error. (First supported in version 3.0 of the Lightroom SDK.)
+---@return any # The value of the specified metadata property as the appropriate data type, or nil if not applicable. If no key is specified, returns a table of all available metadata fields as key/value pairs.
+---@return any
 function LrPhoto:getPropertyForPlugin(plugin, fieldId, optVersion, noThrow) end
 
 --- Retrieves unformatted metadata from this photo.
@@ -109,6 +111,8 @@ function LrPhoto:getRawMetadata(key) end
 function LrPhoto:isAvailableForEditing() end
 
 --- Checks if AI Settings need to be updated for this photo.
+---@return boolean # True if AI settings need to be updated, false otherwise.
+---@return table # An array of edit status entries in AI Edit Status panel order. Each entry contains: name (string): The edit's display name. ok (boolean): True if the edit is up to date. hasUpdateButton (boolean): True if the edit can be updated. isSupported (boolean): True if the edit is supported. needsInternetForUpdate (boolean): True if updating requires an Internet connection. The array is empty for videos, photos without AI edits, or when detailed status is unavailable. The Boolean can still be true if only cached status is available.
 function LrPhoto:needsUpdateAISettings() end
 
 --- Opens export dialog for the current photo.

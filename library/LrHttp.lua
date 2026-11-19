@@ -7,7 +7,8 @@ local LrHttp = {}
 ---@param url string The URL to get.
 ---@param headers table? A table of tables, one for each header. Each header table has a 'field' and a 'value' entry. Unless you specify a 'Content-Type' header, Lightroom will add such a header with a value of 'text/plain'. To force the omission of a 'Content-Type' header, specify a 'Content-Type' header with a value of 'skip'.
 ---@param timeout number? The length of time (in seconds) to wait during each phase of the connection before canceling the request. This parameter will be ignored by Lightroom 1.3 and 1.4.
----@return string, table
+---@return string # The body of the HTTP response.
+---@return table # A table of tables, one for each header. Each header table has a 'field' and a 'value' entry. The headers table contains the key "status" whose value is the HTTP status (an integer). Cookies are stored in a 'Set-Cookie' header; there can be multiple 'Set-Cookie' headers
 function LrHttp.get(url, headers, timeout) end
 
 --- Opens a URL in the user's preferred web browser.
@@ -26,7 +27,8 @@ function LrHttp.parseCookie(cookie, decodeUrlEncoding) end
 ---@param method string? The name of the HTTP method to use. Default is "POST".
 ---@param timeout number? The length of time (in seconds) to wait during each phase of the connection before canceling the request. This parameter will be ignored by Lightroom 1.3 and 1.4.
 ---@param totalSize number? The total size of the post body, when a byte getter function is passed in for the 'postBody' parameter, which is only supported starting with Lightroom 4.1.
----@return string, table
+---@return string # The body of the HTTP response.
+---@return table # A table of tables, one for each header. Each header table has a 'field' and a 'value' entry. The headers table contains the key "status" whose value is the HTTP status (an integer). Cookies are stored in a 'Set-Cookie' header; there can be multiple 'Set-Cookie' headers if more than one cookie was set.
 function LrHttp.post(url, postBody, headers, method, timeout, totalSize) end
 
 --- Sends or retrieves MIME-Multipart data using HTTP or HTTPS POST.
@@ -36,7 +38,8 @@ function LrHttp.post(url, postBody, headers, method, timeout, totalSize) end
 ---@param timeout number? The length of time (in seconds) to wait during each phase of the connection before canceling the request. This parameter will be ignored by Lightroom 1.3 and 1.4.
 ---@param callbackFn function? Will be called back with a number between 0 and 1 indicating the % of the upload that has completed
 ---@param suppressFormData boolean? If true, a 'Content-Disposition' header will not be added to each MIME chunk.
----@return string, table
+---@return string # The body of the HTTP response.
+---@return table # A table of tables, one for each header. Each header table has a 'field' and a 'value' entry. The headers table contains the key "status" whose value is the HTTP status (an integer). Cookies are stored in a 'Set-Cookie' header; there can be multiple 'Set-Cookie' headers if more than one cookie was set.
 function LrHttp.postMultipart(url, content, headers, timeout, callbackFn, suppressFormData) end
 
 return LrHttp

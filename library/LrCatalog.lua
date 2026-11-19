@@ -160,6 +160,8 @@ function LrCatalog:getChildCollections() end
 function LrCatalog:getCollectionByLocalIdentifier(id) end
 
 --- Retrieves the value of the current library view filter.
+---@return any
+---@return string # The preset's name if the current view filter is a preset, otherwise nil.
 function LrCatalog:getCurrentViewFilter() end
 
 --- Retrievs the folder object for a given path.
@@ -194,6 +196,8 @@ function LrCatalog:getPath() end
 
 --- Partitions the given photos into those available for editing and those locked for a background operation.
 ---@param photos LrPhoto[] The photos to check.
+---@return LrPhoto[] # Photos that are available for editing.
+---@return LrPhoto[] # Photos that are locked for a background operation.
 function LrCatalog:getPhotosAvailableForEditing(photos) end
 
 --- Retrieves plug-in-specific data for this catalog, as previously set by catalog:setPropertyForPlugin().

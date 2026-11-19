@@ -63,6 +63,8 @@ function XmlDomInstance:childAtIndex(index) end
 function XmlDomInstance:childCount() end
 
 --- Retrieves the name of the xml node from this XML document.
+---@return string # The name of the xml node.
+---@return string # The namespace of the xml node.
 function XmlDomInstance:name() end
 
 --- Converts the XML encapsulated by this object into its string representation.

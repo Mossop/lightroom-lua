@@ -54,6 +54,7 @@ This deletes and rewrites `library/`. Review the diff before committing it.
      - Comma lists become tuples.
      - `TYPE_MAP` translates informal names: `Boolean` → `boolean`, `_PLUGIN` → `LrPlugin`, `builderInstance` → `XmlBuilderInstance`, `export rendition` → `LrExportRendition`, and so on.
    - **A named return value**, such as `success (Boolean) …`.
+   - **A "Return values" list**, where each entry becomes its own `---@return`.
    - **Text that starts with `true` or `false`**, which becomes `boolean`.
    - **`An iterator for all Xs`**, which becomes `fun(): number, X | nil`.
    - **Parameter names**: `id` is `string`, and `isSomething` is `boolean`.
@@ -86,7 +87,6 @@ These are the cases where the generator currently produces wrong or unhelpful ty
 | `(array of strings)` | `string[][]` | `string[]` |
 | `(Boolean, string)` as a return value | `[boolean, string]` (one tuple) | `boolean, string` (two return values) |
 | `(string,bool)` (no space after the comma) | `string,bool` | same as `string, bool` |
-| A "Return values" heading with a numbered list, as in `LrHttp.get` | ignored | one `---@return` per entry. Currently handled with `TYPE_OVERRIDES` |
 | `(string, function, or table)` | `([string, function,] \| table)` | `(string \| function \| table)` |
 | `(LrCollection and LrCollectionSet)` | left as-is | `(LrCollection \| LrCollectionSet)` |
 | `(one or more strings)` | `(one \| more strings)` | `string` |

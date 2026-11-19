@@ -71,11 +71,20 @@ function LrDate.timeToUserFormat(time, format, isGMT) end
 function LrDate.timeToW3CDate(time) end
 
 --- Retrieves the current time zone and reports whether that zone is currently observing daylight savings time.
+---@return number # The offset from UTC in seconds. For example, U.S. Pacific Standard Time (PST) is -28800.
+---@return boolean # True if daylight savings time is in effect.
 function LrDate.timeZone() end
 
 --- Converts a Cocoa date stamp to its components (that is, individual values for year, month, day, and so on).
 ---@param time number The date and time as a Cocoa date stamp value (i.e. number of seconds since midnight UTC on January 1, 2001).
 ---@param optTimeZone number An optional time zone bias to apply to the date stamp before conversion, expressed as a number of seconds relative to UTC (i.e. US Central Standard Time would be -21600). Defaults to local time zone if not supplied.
+---@return number # year
+---@return number # month (1-12)
+---@return number # day (1-12)
+---@return number # hour (0-23)
+---@return number # minute (0-59)
+---@return number # second (0-59); fractional seconds may be discarded
+---@return number # day of week (1-7, Sunday = 1, Saturday = 7)
 function LrDate.timestampToComponents(time, optTimeZone) end
 
 return LrDate

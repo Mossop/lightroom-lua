@@ -62,12 +62,16 @@ function LrFunctionContextNamespace.pcallWithContext_noyield(name, func, ...) en
 --- Runs the main function in a known-safe function environment, catching any exceptions that occur.
 ---@param func function The main function to call, with an empty environment.
 ---@param ... any Further arguments are passed through to the function.
+---@return boolean # True if the call succeeded, false if an error occurred
+---@return any # The call results; that is, whatever is returned from the main function.
 function LrFunctionContextNamespace.pcallWithEmptyEnvironment(func, ...) end
 
 --- Runs the main function in a caller-provided function environment, catching any exceptions that occur.
 ---@param func function The main function to call, with an empty environment.
 ---@param env table The function environment to use.
 ---@param ... any Further arguments are passed through to the function.
+---@return boolean # True if the call succeeded, false if an error occurred
+---@return any # The call results; that is, whatever is returned from the main function.
 function LrFunctionContextNamespace.pcallWithEnvironment(func, env, ...) end
 
 --- Runs the main function in an asynchronous/cooperative task, then calls any cleanup handlers.

@@ -4,6 +4,8 @@
 local LrSystemInfo = {}
 
 --- Reports the size of the main Lightroom application window.
+---@return number # Width of Lightroom's main application window, in pixels
+---@return number # Height of Lightroom's main application window, in pixels
 function LrSystemInfo.appWindowSize() end
 
 --- Reports the CPU architecture of the host computer.

@@ -94,14 +94,17 @@ class TestRealSdk:
         # Informal instance names in the docs.
         ("LrXml", "---@class XmlBuilderInstance"),
         ("LrXml", "---@class XmlDomInstance"),
+        # A "Return values" list.
+        ("LrHttp", "---@return string # The body of the HTTP response."),
+        ("LrExportRendition", "---@return boolean # True if rendering was successful."),
+        ("LrDate", "---@return boolean # True if daylight savings time is in effect."),
     ])
     def test_inferred_types(self, library, module, line):
         assert line in self.module(library, module)
 
     @pytest.mark.parametrize("module,line", [
-        ("LrHttp", "---@return string, table"),
+        ("LrHttp", "---@param timeout number?"),
         ("LrPlugin", "---@field id string"),
-        ("LrExportRendition", "---@return boolean, string"),
         ("LrDevelopController", "---@param spotParams table"),
     ])
     def test_overrides_are_applied(self, library, module, line):

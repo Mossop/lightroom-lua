@@ -29,12 +29,9 @@ TYPE_MAP = {
 }
 
 TYPE_OVERRIDES = {
-    "LrHttp.get": "string, table",
     "LrHttp.get@timeout": "number?",
-    "LrHttp.post": "string, table",
     "LrHttp.post@timeout": "number?",
     "LrHttp.post@totalSize": "number?",
-    "LrHttp.postMultipart": "string, table",
     "LrHttp.postMultipart@timeout": "number?",
     "LrPlugin.id": "string",
     "LrPlugin.path": "string",
@@ -43,7 +40,6 @@ TYPE_OVERRIDES = {
     "LrExportContext.exportSession": "LrExportSession",
     "LrPublishedCollection:getRemoteId": "string | number | nil",
     "LrPublishedCollection:getRemoteUrl": "string | nil",
-    "LrExportRendition:waitForRender": "boolean, string",
     "LrDevelopController.setSelectedSpotParams@spotParams": "table",
 }
 
@@ -304,13 +300,13 @@ class Argument(Item):
 
 class Function(Item):
     comment = None
-    return_name = None
-    return_comment = None
 
     def __init__(self, namespace, name):
         match = re.search(r"^(.+)\((.*)\)$", name)
         super().__init__(namespace, match.group(1))
         self.arguments = dict()
+        # A list of (type, comment), one for each return value.
+        self.returns = []
 
         arg_names = match.group(2).strip()
         if len(arg_names) > 0:
@@ -322,11 +318,26 @@ class Function(Item):
             print("  Unexpected argument %s" % name)
         self.arguments[name].parse(tag)
 
-    def parse_return(self, tags):
-        (self.item_type, self.return_name, self.return_comment) = parse_type_from_str(tags_text_contents(tags))
-        if self.item_type is None:
+    def parse_return(self, text):
+        (return_type, _, comment) = parse_type_from_str(text)
+        if return_type is None:
             warn_missing_type(self)
-            self.item_type = "any"
+            return_type = "any"
+        self.returns.append((return_type, comment))
+
+    def found_type(self):
+        override = super().found_type()
+        if override is not None:
+            return override
+        if len(self.returns) > 0:
+            return ", ".join([t for (t, _) in self.returns])
+        return None
+
+    def write_return(self, file, return_type, comment):
+        file.write("---@return %s" % return_type)
+        if comment is not None:
+            file.write(" # %s" % comment)
+        file.write("\n")
 
     def write(self, file):
         if self.comment is not None:
@@ -334,11 +345,13 @@ class Function(Item):
         for arg in self.arguments.values():
             arg.write(file)
 
-        if self.found_type() is not None:
-            file.write("---@return %s" % self.found_type())
-            if self.return_comment is not None:
-                file.write(" # %s" % self.return_comment)
-            file.write("\n")
+        override = super().found_type()
+        if override is not None:
+            comment = self.returns[0][1] if len(self.returns) == 1 else None
+            self.write_return(file, override, comment)
+        else:
+            for (return_type, comment) in self.returns:
+                self.write_return(file, return_type, comment)
 
         if not ":" in self.final_path() and not "." in self.final_path():
             file.write("local ")
@@ -403,7 +416,13 @@ def parse_module(namespace, html):
                     return_tags.append(inner)
                     inner = inner.next_sibling
 
-                func.parse_return(return_tags)
+                func.parse_return(tags_text_contents(return_tags))
+
+            return_header = find_by_tag_and_text_content(function_def, "h3", "Return values")
+            if return_header is not None:
+                retval_list = function_def.find(attrs = { "class": "retval_list" })
+                for item in retval_list.find_all("li", recursive = False):
+                    func.parse_return(text_content(item))
 
     return BASES
 
