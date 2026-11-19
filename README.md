@@ -30,11 +30,11 @@ Or point at the library directly:
 The SDK is not included in this repository. Download it from Adobe, extract it into the repository root (`LrC_*` is git-ignored) and run:
 
 ```sh
-mise run setup        # install Python dependencies into .venv
-python build.py LrC_16.0_202611041403-7ac14c66.release_SDK
+mise run setup        # install Python dependencies into .venv, and luacheck
+mise run build        # python build.py LrC_*_SDK, then StyLua and luacheck
 ```
 
-This deletes and rewrites `library/`. Review the diff before committing it.
+This deletes and rewrites `library/`, formats it with StyLua and lints it with luacheck (configured in `.luacheckrc`). Review the diff before committing it.
 
 ## How it works
 
@@ -83,7 +83,7 @@ mise run test         # or: python -m pytest tests
   - It checks them file-by-file against the committed `library/`.
   - It spot-checks tricky cases.
 
-  These real-SDK tests are skipped when there is no SDK.
+  These real-SDK tests are skipped when there is no SDK, or when StyLua isn't on the `PATH` (`mise run test` provides it).
 
 Known bugs are recorded as strict `xfail` tests whose assertion is the *correct* output. Fixing a bug makes its test fail ("XPASS") until you remove the marker.
 

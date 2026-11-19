@@ -2,6 +2,8 @@
 
 import filecmp
 import os
+import shutil
+import subprocess
 
 import pytest
 
@@ -53,8 +55,14 @@ def test_build_creates_missing_target(tmp_path):
 
 @pytest.fixture(scope="module")
 def library(sdk, tmp_path_factory):
+    # `mise run build` formats the library with StyLua, so do the same here.
+    stylua = shutil.which("stylua")
+    if stylua is None:
+        pytest.skip("StyLua not available; run the tests with `mise run test`")
+
     target = tmp_path_factory.mktemp("build") / "library"
     build.build(sdk, str(target))
+    subprocess.run([stylua, str(target)], check=True)
     return target
 
 

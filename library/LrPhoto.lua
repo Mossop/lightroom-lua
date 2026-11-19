@@ -26,7 +26,14 @@ function LrPhoto:applyDevelopPreset(preset, plugin, presetAmount, updateAISettin
 ---@param optFlattenAutoNow boolean? True to resolve Auto Tone to fixed values when settings are applied; false leaves Auto Tone active. Default is false. With AI updates disabled, unavailable image data leaves Auto Tone unresolved.
 ---@param optUpdateAISettings boolean? True to recalculate AI edits, if needed, using the photo's current settings combined with the supplied settings. The settings and their AI updates share one Develop history step. Default is false.
 ---@param optProgressScopeName string? Name shown in the progress bar. Defaults to "Apply Develop Settings".
-function LrPhoto:applyDevelopSettings(settings, optHistoryName, optFlattenAutoNow, optUpdateAISettings, optProgressScopeName) end
+function LrPhoto:applyDevelopSettings(
+	settings,
+	optHistoryName,
+	optFlattenAutoNow,
+	optUpdateAISettings,
+	optProgressScopeName
+)
+end
 
 --- Applies a snapshot to the photo.
 ---@param id string ID of the snapshot to be applied.

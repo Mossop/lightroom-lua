@@ -35,7 +35,15 @@ function LrCatalog:applyDevelopPreset(photos, preset, plugin, presetAmount, upda
 ---@param optFlattenAutoNow boolean? True to resolve Auto settings when settings are applied. Default is false. With AI updates disabled, unavailable image data leaves Auto Tone unresolved.
 ---@param optUpdateAISettings boolean? True to recalculate AI edits, if needed, using each photo's current settings combined with the supplied settings. The settings and their AI updates share one Develop history step per photo. Default is false.
 ---@param optProgressScopeName string? Name shown in the progress bar. Defaults to "Apply Develop Settings".
-function LrCatalog:applyDevelopSettings(photos, settings, optHistoryName, optFlattenAutoNow, optUpdateAISettings, optProgressScopeName) end
+function LrCatalog:applyDevelopSettings(
+	photos,
+	settings,
+	optHistoryName,
+	optFlattenAutoNow,
+	optUpdateAISettings,
+	optProgressScopeName
+)
+end
 
 --- If this catalog has at least private write access, the function returns.
 ---@param funcName string Name of a function whose value appears in the error message, if any.

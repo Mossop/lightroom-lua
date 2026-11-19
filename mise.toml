@@ -1,12 +1,31 @@
 [tools]
 python = "3.11"
 uv = "latest"
+lua = "5.1.5"
+stylua = "2.6.0"
 
 [env]
 _.python.venv = { path = ".venv", create = true }
 
 [tasks.setup]
-run = "uv pip install -r requirements.txt"
+run = [
+  "uv pip install -r requirements.txt",
+  "luarocks install luacheck",
+]
 
 [tasks.test]
 run = "python -m pytest tests"
+
+[tasks.build]
+description = "Regenerate library/ from the SDK, then format and lint it"
+run = "python build.py LrC_*_SDK"
+depends_post = ["stylua", "luacheck"]
+
+[tasks.luacheck]
+description = "Lint the generated library with luacheck"
+run = "luacheck library"
+wait_for = ["stylua"]
+
+[tasks.stylua]
+description = "Format the generated library with StyLua"
+run = "stylua library"

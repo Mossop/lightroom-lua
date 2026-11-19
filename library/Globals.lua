@@ -1,5 +1,5 @@
 ---@meta
-local LrLocalization = require "LrLocalization"
+local LrLocalization = require("LrLocalization")
 
 --- The current plugin
 ---@type LrPlugin

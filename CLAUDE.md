@@ -15,10 +15,14 @@ Generates LuaLS type definitions (`library/*.lua`) from the Lightroom Classic SD
 The Python environment is managed by mise (`mise.toml`) in `.venv`, using Python 3.11. Use `.venv/bin/python` if mise isn't active.
 
 ```sh
-mise run setup                           # install requirements.txt
+mise run setup                           # install requirements.txt and luacheck
 mise run test                            # python -m pytest tests
-python build.py LrC_<version>_SDK        # regenerate library/ (deletes it first)
+mise run build                           # regenerate library/ (deletes it first), then run stylua and luacheck
+mise run stylua                          # format library/
+mise run luacheck                        # lint library/ (config in .luacheckrc)
 ```
+
+`python build.py LrC_<version>_SDK` alone produces unformatted output that won't match the committed library, so regenerate with `mise run build`.
 
 ## Working rules
 

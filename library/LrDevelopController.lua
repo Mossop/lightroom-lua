@@ -222,7 +222,14 @@ function LrDevelopController.invertMask(id, param) end
 ---@param horizontalUnits number? no. of units to move horizontally. Valid only when 'leftOrRight' param is set appropriately. Default: 1
 ---@param verticalUnits number? no. of units to move vertically. Valid only when 'upOrDown' param is set appropriately. Default: 1
 ---@param shouldMoveSourceArea boolean? if true, move operation would be done on source area. Valid only if selected spot type is "heal" or "clone". Default: false
-function LrDevelopController.moveSelectedSpot(leftOrRight, upOrDown, horizontalUnits, verticalUnits, shouldMoveSourceArea) end
+function LrDevelopController.moveSelectedSpot(
+	leftOrRight,
+	upOrDown,
+	horizontalUnits,
+	verticalUnits,
+	shouldMoveSourceArea
+)
+end
 
 --- Refresh selected spot.
 ---@param whichFeature string? Feature name. Allowed values: "manualRemove", "distractingPeopleRemoval". Default value: "manualRemove".
