@@ -60,6 +60,7 @@ This deletes and rewrites `library/`. Review the diff before committing it.
    - **`An X object`**, which becomes `X`, and **text that starts with `table`**, such as `A table with the following information: …`, which becomes `table`.
    - A return value of `(None)` or `(nil)` means there is no return value, so no `---@return` is written.
    - **Parameter names**: `id` is `string`, and `isSomething` is `boolean`.
+   - **Constructors**: a module constructor such as `LrColor( … )` returns the module's instance class when its return value isn't otherwise understood.
    - Anything else becomes `any`. The build logs a "has no known type" warning for it.
 4. **Overrides.** `TYPE_OVERRIDES` fixes up cases the heuristics get wrong. It is keyed by the documented path (`LrHttp.get`) or the generated path (`LrPublishedCollection:getRemoteId`), with `@arg` for parameters.
 5. **Output.** Each module becomes `library/<Module>.lua`, holding `---@class`, `---@field`, `---@param` and `---@return` annotations and empty function stubs. `Globals.lua` declares `_PLUGIN` and `LOC`.

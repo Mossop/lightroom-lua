@@ -135,6 +135,24 @@ return LrColorConstructor
 """
 
 
+@pytest.mark.parametrize("returns", [None, "Something undocumented."])
+def test_constructor_returns_the_module_class_by_default(returns):
+    html = module_html(functions=[
+        function("LrColor", "r", params=[("r", "(number) Red.")], returns=returns),
+        function("color:red", returns="(number) The red value."),
+    ])
+
+    lua = lines(generate_module("LrColor", html))
+    assert "---@return LrColor" in lua
+    assert "local function LrColorConstructor(r) end" in lua
+
+
+def test_constructor_without_a_class_is_not_given_one():
+    html = module_html(functions=[function("LrFoo", returns="Something undocumented.")])
+
+    assert "---@return any" in lines(generate_module("LrFoo", html))
+
+
 def test_secondary_classes_use_mapped_names():
     html = module_html(functions=[
         function("LrXml.createXmlBuilder", returns="(builderInstance) The builder."),

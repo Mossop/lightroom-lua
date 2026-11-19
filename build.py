@@ -402,11 +402,26 @@ class Function(Item):
             file.write(" # %s" % comment)
         file.write("\n")
 
+    def constructed_class(self):
+        """For a module constructor, like LrColor( … ), returns the module's instance class."""
+        if not self.base.is_ctor():
+            return None
+        for base in BASES.values():
+            if base.is_class() and base.final_path() == self.base.namespace:
+                return base.final_path()
+        return None
+
     def write(self, file):
         if self.comment is not None:
             file.write("--- %s\n" % self.comment)
         for arg in self.arguments.values():
             arg.write(file)
+
+        # A constructor whose return value isn't understood returns the module's class.
+        cls = self.constructed_class()
+        if cls is not None and all(t == "any" for (t, _) in self.returns):
+            comment = self.returns[0][1] if len(self.returns) == 1 else None
+            self.returns = [(cls, comment)]
 
         override = super().found_type()
         if override is not None:
